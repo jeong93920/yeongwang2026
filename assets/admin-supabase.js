@@ -174,6 +174,22 @@
       });
     });
 
+    document.querySelectorAll('[data-stock-visible]').forEach(checkbox => {
+      checkbox.addEventListener('change', async () => {
+        const id = checkbox.dataset.stockVisible;
+        checkbox.disabled = true;
+        try {
+          const item = await store.updateMenuItem(id, { stockVisible: checkbox.checked });
+          toast(`${item.name} · 수량 ${item.stockVisible ? '표시' : '숨김'}`);
+        } catch (error) {
+          checkbox.checked = !checkbox.checked;
+          toast(error.message);
+        } finally {
+          checkbox.disabled = false;
+        }
+      });
+    });
+
     document.querySelectorAll('[data-active]').forEach(button => {
       button.addEventListener('click', async () => {
         const id = button.dataset.active;
@@ -239,6 +255,7 @@
         <button class="stock-button" type="button" data-save-price="${item.id}">가격 저장</button>
         <label><span class="sr-only">${escapeHtml(item.name)} 남은 수량</span><input class="price-input" data-stock-qty="${item.id}" type="number" min="0" step="1" inputmode="numeric" placeholder="무제한" value="${item.stockRemaining != null ? item.stockRemaining : ''}" aria-label="${escapeHtml(item.name)} 남은 수량"></label>
         <button class="stock-button" type="button" data-save-stock="${item.id}">수량 저장</button>
+        <label class="menu-option"><input type="checkbox" data-stock-visible="${item.id}" ${item.stockVisible ? 'checked' : ''}><span>고객에게 수량 표시</span></label>
         <button class="stock-button ${item.active ? '' : 'start'}" type="button" data-active="${item.id}">${item.active ? '판매 중지' : '판매 시작'}</button>
         <button class="stock-button ${item.soldOut ? 'sold-out' : ''}" type="button" data-stock="${item.id}" ${item.active ? '' : 'disabled'}>${item.soldOut ? '품절 해제' : '품절 처리'}</button>
       </div>

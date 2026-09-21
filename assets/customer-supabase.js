@@ -125,7 +125,7 @@
       const unavailable = item.soldOut || sharedStockOut;
       const reachedStockLimit = stockLimitReached(state, item.name);
       const stockLabel = item.name === '세트메뉴' ? '세트 가능' : '남은 수량';
-      const stockText = stockRemaining != null
+      const stockText = stockRemaining != null && item.stockVisible
         ? `<div class="prep-speed">${stockLabel} · ${stockRemaining}개</div>`
         : '';
       return `<article class="menu-card ${unavailable ? 'sold-out' : ''}">
@@ -151,7 +151,9 @@
         const change = Number(button.dataset.change);
         if (change > 0 && menu && stockLimitReached(currentState, menu.name)) {
           const stockRemaining = menuStockRemaining(currentState, menu.name);
-          toast(`${menu.name}은 ${stockRemaining}개만 더 주문할 수 있어요.`);
+          toast(menu.stockVisible
+            ? `${menu.name}은 ${stockRemaining}개만 더 주문할 수 있어요.`
+            : `${menu.name}은 더 담을 수 없어요.`);
           return;
         }
         const previous = cart.get(menuId) || 0;
