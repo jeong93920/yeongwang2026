@@ -525,6 +525,14 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 }
 .filter-row button:last-child { border-right: 1px solid var(--line); }
 .filter-row button.active { border-color: var(--line); background: var(--text); color: var(--surface); }
+.filter-row button[data-filter="payment_pending"] { background: #f8f2e2; border-color: #b9a26a; }
+.filter-row button[data-filter="cooking"] { background: #eaf0f8; border-color: #7ea0c4; }
+.filter-row button[data-filter="ready"] { background: #eaf4ec; border-color: #86b494; }
+.filter-row button[data-filter="done"] { background: var(--soft); }
+.filter-row button.active[data-filter="payment_pending"] { background: #b9a26a; border-color: #b9a26a; color: #3a2a00; }
+.filter-row button.active[data-filter="cooking"] { background: #7ea0c4; border-color: #7ea0c4; color: #06264a; }
+.filter-row button.active[data-filter="ready"] { background: #86b494; border-color: #86b494; color: #0c3018; }
+.filter-row button.active[data-filter="done"] { background: var(--muted); border-color: var(--muted); color: #fff; }
 .admin-orders { border-top: 1px solid var(--line); }
 .admin-order {
   display: grid;
@@ -567,9 +575,9 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 }
 .order-actions button:last-child { border-right: 1px solid var(--line); }
 .order-actions .next { border-color: var(--line); background: var(--text); color: var(--surface); font-weight: 900; }
-.order-actions .cancel { color: var(--text); text-decoration: line-through; }
-.order-actions button[data-status="cooking"] { background: #5c7ba3; border-color: #5c7ba3; color: #fff; }
-.order-actions button[data-status="ready"] { background: #5b9270; border-color: #5b9270; color: #fff; }
+.order-actions .cancel { color: var(--text); }
+.order-actions button[data-status="cooking"] { background: #4f6f99; border-color: #4f6f99; color: #fff; }
+.order-actions button[data-status="ready"] { background: #8fa8cc; border-color: #8fa8cc; color: #06264a; }
 .order-actions button[data-status="picked_up"] { background: var(--muted); border-color: var(--muted); color: #fff; }
 .admin-menu-list { margin-top: 14px; border-top: 1px solid var(--line); }
 .admin-menu-item {
