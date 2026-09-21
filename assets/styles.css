@@ -911,12 +911,24 @@ button:disabled { cursor: not-allowed; opacity: .38; }
   margin: 0 -10px;
   font-size: 12px;
 }
-.admin-order-items span {
+.admin-order-items span,
+.admin-order-items .item-toggle {
   display: flex;
   justify-content: space-between;
   gap: 8px;
 }
 .admin-order-items b { font-size: 14px; }
+.admin-order-items .item-toggle {
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.admin-order-items .item-toggle.prepared { text-decoration: line-through; opacity: .55; }
 .admin-order-items.status-payment_pending { background: #f8f2e2; }
 .admin-order-items.status-confirmed { background: #eef0f8; }
 .admin-order-items.status-cooking { background: #eaf0f8; }

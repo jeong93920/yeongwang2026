@@ -5,6 +5,7 @@
   const ADMIN_EMAIL = 'ipad93920@gmail.com';
   let activeFilter = 'active';
   let toastTimer;
+  const preparedItems = new Set();
   const $ = selector => document.querySelector(selector);
   const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
@@ -91,7 +92,24 @@
   }
 
   function itemLines(order) {
-    return (order.items || []).map(item => `<span>${escapeHtml(item.name || '삭제된 메뉴')} <b>×${Number(item.quantity) || 0}</b></span>`).join('');
+    return (order.items || []).map((item, index) => {
+      const text = `${escapeHtml(item.name || '삭제된 메뉴')} <b>×${Number(item.quantity) || 0}</b>`;
+      if (order.status !== 'cooking') return `<span>${text}</span>`;
+      const key = `${order.id}:${index}`;
+      const prepared = preparedItems.has(key);
+      return `<button type="button" class="item-toggle ${prepared ? 'prepared' : ''}" data-item-toggle="${key}">${text}</button>`;
+    }).join('');
+  }
+
+  function bindItemActions() {
+    document.querySelectorAll('[data-item-toggle]').forEach(span => {
+      span.addEventListener('click', () => {
+        const key = span.dataset.itemToggle;
+        if (preparedItems.has(key)) preparedItems.delete(key);
+        else preparedItems.add(key);
+        span.classList.toggle('prepared');
+      });
+    });
   }
 
   function bindOrderActions() {
@@ -137,6 +155,7 @@
       </article>`;
     }).join('');
     bindOrderActions();
+    bindItemActions();
   }
 
   function bindMenuActions() {
