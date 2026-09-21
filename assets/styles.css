@@ -549,7 +549,12 @@ button:disabled { cursor: not-allowed; opacity: .38; }
   font-size: 9px;
   font-weight: 800;
 }
-.status-pill.cooking, .status-pill.ready { background: transparent; color: var(--text); }
+.status-pill.status-payment_pending { background: #f5c344; border-color: #a9791b; color: #3a2a00; }
+.status-pill.status-confirmed { background: #cfd8ff; border-color: #4b5ec9; color: #1c2666; }
+.status-pill.status-cooking { background: #7fb2ff; border-color: #1d5ac2; color: #06214d; }
+.status-pill.status-ready { background: #6fd48f; border-color: #1c8a44; color: #063d1c; }
+.status-pill.status-picked_up { background: var(--soft); border-color: var(--line); color: var(--muted); }
+.status-pill.status-cancelled { background: #f29a9a; border-color: #b23b3b; color: #520f0f; }
 .order-actions { display: flex; gap: 0; }
 .order-actions button {
   padding: 8px 9px;
