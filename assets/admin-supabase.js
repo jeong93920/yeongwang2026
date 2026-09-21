@@ -157,6 +157,23 @@
       });
     });
 
+    document.querySelectorAll('[data-save-stock]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const id = button.dataset.saveStock;
+        const input = document.querySelector(`[data-stock-qty="${id}"]`);
+        const raw = input.value.trim();
+        button.disabled = true;
+        try {
+          const item = await store.updateMenuItem(id, { stockRemaining: raw === '' ? null : Number(raw) });
+          toast(`${item.name} · 남은 수량 ${item.stockRemaining != null ? item.stockRemaining + '개' : '무제한'} 저장`);
+        } catch (error) {
+          toast(error.message);
+        } finally {
+          button.disabled = false;
+        }
+      });
+    });
+
     document.querySelectorAll('[data-active]').forEach(button => {
       button.addEventListener('click', async () => {
         const id = button.dataset.active;
@@ -220,6 +237,8 @@
         </select></label>
         <label><span class="sr-only">${escapeHtml(item.name)} 가격</span><input class="price-input" data-price="${item.id}" type="number" min="0" step="100" inputmode="numeric" value="${item.price}" aria-label="${escapeHtml(item.name)} 가격"></label>
         <button class="stock-button" type="button" data-save-price="${item.id}">가격 저장</button>
+        <label><span class="sr-only">${escapeHtml(item.name)} 남은 수량</span><input class="price-input" data-stock-qty="${item.id}" type="number" min="0" step="1" inputmode="numeric" placeholder="무제한" value="${item.stockRemaining != null ? item.stockRemaining : ''}" aria-label="${escapeHtml(item.name)} 남은 수량"></label>
+        <button class="stock-button" type="button" data-save-stock="${item.id}">수량 저장</button>
         <button class="stock-button ${item.active ? '' : 'start'}" type="button" data-active="${item.id}">${item.active ? '판매 중지' : '판매 시작'}</button>
         <button class="stock-button ${item.soldOut ? 'sold-out' : ''}" type="button" data-stock="${item.id}" ${item.active ? '' : 'disabled'}>${item.soldOut ? '품절 해제' : '품절 처리'}</button>
       </div>

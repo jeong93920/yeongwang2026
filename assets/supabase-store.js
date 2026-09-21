@@ -311,6 +311,16 @@
       if (!['fast', 'normal', 'slow'].includes(changes.prepSpeed)) throw new Error('올바른 소요시간을 선택해 주세요.');
       values.prep_speed = changes.prepSpeed;
     }
+    if (Object.hasOwn(changes, 'stockRemaining')) {
+      if (changes.stockRemaining === null) {
+        values.stock_remaining = null;
+      } else {
+        const stock = Number(changes.stockRemaining);
+        if (!Number.isInteger(stock) || stock < 0) throw new Error('남은 수량은 0 이상의 정수로 입력해 주세요.');
+        values.stock_remaining = stock;
+        values.sold_out = stock <= 0;
+      }
+    }
     const data = throwIfError(await client.from('booth_menu_items')
       .update(values)
       .eq('id', menuId)
