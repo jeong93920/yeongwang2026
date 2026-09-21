@@ -13,7 +13,7 @@
     ready: '수령 가능', picked_up: '수령 완료', cancelled: '취소'
   };
   const nextAction = {
-    payment_pending: { label: '입금 확인', next: 'confirmed' },
+    payment_pending: { label: '입금 확인', next: 'cooking' },
     confirmed: { label: '조리 시작', next: 'cooking' },
     cooking: { label: '수령 가능', next: 'ready' },
     ready: { label: '수령 완료', next: 'picked_up' }
@@ -31,7 +31,7 @@
   }
 
   function matchesFilter(order) {
-    if (activeFilter === 'active') return ['confirmed', 'cooking'].includes(order.status);
+    if (activeFilter === 'active') return true;
     if (activeFilter === 'done') return ['picked_up', 'cancelled'].includes(order.status);
     return order.status === activeFilter;
   }
@@ -68,7 +68,7 @@
     $('#metric-sales-day2').textContent = store.formatPrice(salesForDay(SALES_DAYS.day2));
     $('#metric-sales').textContent = store.formatPrice(sales);
     $('#metric-payment').textContent = state.orders.filter(order => order.status === 'payment_pending').length;
-    $('#metric-cooking').textContent = state.orders.filter(order => ['confirmed', 'cooking'].includes(order.status)).length;
+    $('#metric-cooking').textContent = state.orders.filter(order => order.status === 'cooking').length;
     $('#metric-ready').textContent = state.orders.filter(order => order.status === 'ready').length;
     $('#metric-done').textContent = state.orders.filter(order => ['picked_up', 'cancelled'].includes(order.status)).length;
   }
@@ -76,7 +76,7 @@
   function renderMenuTotals(state) {
     const totals = new Map(state.menu.map(item => [item.id, { name: item.name, quantity: 0 }]));
     state.orders
-      .filter(order => ['confirmed', 'cooking'].includes(order.status))
+      .filter(order => order.status === 'cooking')
       .forEach(order => (order.items || []).forEach(item => {
         const key = item.menuId || `name:${item.name}`;
         const total = totals.get(key) || { name: item.name || '삭제된 메뉴', quantity: 0 };
@@ -123,7 +123,7 @@
     $('#admin-orders').innerHTML = orders.map(order => {
       const action = nextAction[order.status];
       const restoreAction = order.status === 'cancelled'
-        ? { label: '주문 복구', next: 'confirmed' }
+        ? { label: '주문 복구', next: 'cooking' }
         : order.status === 'picked_up' ? { label: '수령 취소', next: 'ready' } : null;
       const statusClass = order.status === 'ready' ? 'ready' : order.status === 'cooking' ? 'cooking' : '';
       return `<article class="admin-order kds-order-card">
