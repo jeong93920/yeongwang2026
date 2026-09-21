@@ -549,12 +549,12 @@ button:disabled { cursor: not-allowed; opacity: .38; }
   font-size: 9px;
   font-weight: 800;
 }
-.status-pill.status-payment_pending { background: #f5c344; border-color: #a9791b; color: #3a2a00; }
-.status-pill.status-confirmed { background: #cfd8ff; border-color: #4b5ec9; color: #1c2666; }
-.status-pill.status-cooking { background: #7fb2ff; border-color: #1d5ac2; color: #06214d; }
-.status-pill.status-ready { background: #6fd48f; border-color: #1c8a44; color: #063d1c; }
+.status-pill.status-payment_pending { background: #ecdfb8; border-color: #b9a26a; color: #5c4a1f; }
+.status-pill.status-confirmed { background: #d8ddef; border-color: #8c98c4; color: #333f6b; }
+.status-pill.status-cooking { background: #cddbec; border-color: #7ea0c4; color: #2c4c72; }
+.status-pill.status-ready { background: #d3e6d7; border-color: #86b494; color: #2b5c3b; }
 .status-pill.status-picked_up { background: var(--soft); border-color: var(--line); color: var(--muted); }
-.status-pill.status-cancelled { background: #f29a9a; border-color: #b23b3b; color: #520f0f; }
+.status-pill.status-cancelled { background: #ecd6d6; border-color: #c08f8f; color: #6b3232; }
 .order-actions { display: flex; gap: 0; }
 .order-actions button {
   padding: 8px 9px;
@@ -568,8 +568,8 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .order-actions button:last-child { border-right: 1px solid var(--line); }
 .order-actions .next { border-color: var(--line); background: var(--text); color: var(--surface); font-weight: 900; }
 .order-actions .cancel { color: var(--text); text-decoration: line-through; }
-.order-actions button[data-status="cooking"] { background: #1d5ac2; border-color: #1d5ac2; color: #fff; }
-.order-actions button[data-status="ready"] { background: #1c8a44; border-color: #1c8a44; color: #fff; }
+.order-actions button[data-status="cooking"] { background: #5c7ba3; border-color: #5c7ba3; color: #fff; }
+.order-actions button[data-status="ready"] { background: #5b9270; border-color: #5b9270; color: #fff; }
 .order-actions button[data-status="picked_up"] { background: var(--muted); border-color: var(--muted); color: #fff; }
 .admin-menu-list { margin-top: 14px; border-top: 1px solid var(--line); }
 .admin-menu-item {
