@@ -31,7 +31,7 @@
   }
 
   function matchesFilter(order) {
-    if (activeFilter === 'active') return true;
+    if (activeFilter === 'active') return !['picked_up', 'cancelled'].includes(order.status);
     if (activeFilter === 'done') return ['picked_up', 'cancelled'].includes(order.status);
     return order.status === activeFilter;
   }
