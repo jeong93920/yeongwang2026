@@ -2,7 +2,7 @@
   'use strict';
 
   const store = window.BoothStore;
-  const ADMIN_EMAIL = 'k01027895490@gmail.com';
+  const ADMIN_EMAIL = 'ipad93920@gmail.com';
   let activeFilter = 'active';
   let toastTimer;
   const $ = selector => document.querySelector(selector);
