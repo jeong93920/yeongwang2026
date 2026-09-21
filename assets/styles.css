@@ -904,7 +904,8 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .admin-order-items {
   display: grid;
   gap: 7px;
-  padding: 12px 0;
+  padding: 12px 10px;
+  margin: 0 -10px;
   font-size: 12px;
 }
 .admin-order-items span {
@@ -913,6 +914,12 @@ button:disabled { cursor: not-allowed; opacity: .38; }
   gap: 8px;
 }
 .admin-order-items b { font-size: 14px; }
+.admin-order-items.status-payment_pending { background: #f8f2e2; }
+.admin-order-items.status-confirmed { background: #eef0f8; }
+.admin-order-items.status-cooking { background: #eaf0f8; }
+.admin-order-items.status-ready { background: #eaf4ec; }
+.admin-order-items.status-picked_up { background: var(--soft); }
+.admin-order-items.status-cancelled { background: #f8eeee; }
 .kds-order-card .admin-order-detail {
   margin-top: auto;
   padding-top: 10px;
