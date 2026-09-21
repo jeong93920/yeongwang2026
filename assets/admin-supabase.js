@@ -19,7 +19,7 @@
     ready: { label: '수령 완료', next: 'picked_up' }
   };
   const prepSpeedLabels = { fast: '빨라요', normal: '적당해요', slow: '늦어요' };
-  const SALES_DAYS = { day1: '2026-09-16', day2: '2026-09-17' };
+  const SALES_DAYS = { day1: '2026-10-28', day2: '2026-10-29' };
   const paidStatuses = ['confirmed', 'cooking', 'ready', 'picked_up'];
 
   function toast(message) {
