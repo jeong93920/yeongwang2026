@@ -571,7 +571,6 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .order-actions button[data-status="cooking"] { background: #1d5ac2; border-color: #1d5ac2; color: #fff; }
 .order-actions button[data-status="ready"] { background: #1c8a44; border-color: #1c8a44; color: #fff; }
 .order-actions button[data-status="picked_up"] { background: var(--muted); border-color: var(--muted); color: #fff; }
-.order-actions button[data-status="cancelled"] { background: #b23b3b; border-color: #b23b3b; color: #fff; text-decoration: none; }
 .admin-menu-list { margin-top: 14px; border-top: 1px solid var(--line); }
 .admin-menu-item {
   display: flex;
