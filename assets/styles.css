@@ -568,9 +568,12 @@ button:disabled { cursor: not-allowed; opacity: .38; }
 .order-actions button:last-child { border-right: 1px solid var(--line); }
 .order-actions .next { border-color: var(--line); background: var(--text); color: var(--surface); font-weight: 900; }
 .order-actions .cancel { color: var(--text); }
-.order-actions button[data-status="cooking"] { background: #7ea0c4; border-color: #7ea0c4; color: #06264a; }
-.order-actions button[data-status="ready"] { background: #86b494; border-color: #86b494; color: #0c3018; }
-.order-actions button[data-status="picked_up"] { background: var(--muted); border-color: var(--muted); color: #fff; }
+.admin-order.status-payment_pending .order-actions .next { background: #ecdfb8; border-color: #b9a26a; color: #5c4a1f; }
+.admin-order.status-confirmed .order-actions .next { background: #d8ddef; border-color: #8c98c4; color: #333f6b; }
+.admin-order.status-cooking .order-actions .next { background: #cddbec; border-color: #7ea0c4; color: #2c4c72; }
+.admin-order.status-ready .order-actions .next { background: #d3e6d7; border-color: #86b494; color: #2b5c3b; }
+.admin-order.status-picked_up .order-actions .next { background: var(--soft); border-color: var(--line); color: var(--muted); }
+.admin-order.status-cancelled .order-actions .next { background: #ecd6d6; border-color: #c08f8f; color: #6b3232; }
 .admin-menu-list { margin-top: 14px; border-top: 1px solid var(--line); }
 .admin-menu-item {
   display: flex;

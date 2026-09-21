@@ -125,7 +125,7 @@
       const restoreAction = order.status === 'cancelled'
         ? { label: '주문 복구', next: 'cooking' }
         : order.status === 'picked_up' ? { label: '수령 취소', next: 'ready' } : null;
-      return `<article class="admin-order kds-order-card">
+      return `<article class="admin-order kds-order-card status-${order.status}">
         <div class="kds-order-head"><div class="admin-order-number">#${order.orderNumber}</div><span class="status-pill status-${order.status}">${labels[order.status]}</span></div>
         <div class="admin-order-items status-${order.status}">${itemLines(order)}</div>
         <div class="admin-order-detail"><small>${escapeHtml(order.payerName)} · ${escapeHtml(formatContact(order.contact))}<br>${elapsed(order.createdAt)} · ${store.formatPrice(store.calculateOrderTotal(order, state))}</small></div>
