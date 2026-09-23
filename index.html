@@ -6,19 +6,25 @@
   <meta name="theme-color" content="#110E0C">
   <meta name="color-scheme" content="dark">
   <title>BASAK WITCH · 주문하기</title>
-  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202609232030">
-  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=202609232030">
+  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202609232200">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=202609232200">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Do+Hyeon&display=swap">
-  <link rel="stylesheet" href="./assets/styles.css?v=202609232030">
+  <link rel="stylesheet" href="./assets/styles.css?v=202609232200">
 </head>
 <body class="customer-body">
   <div class="customer-shell">
+    <!-- 헤더 그림: assets/brand-header.png 로 저장하면 자동으로 표시됩니다.
+         파일이 없으면 아래 자리 표시 상자가 보입니다. -->
     <header class="brand">
-      <div class="brand-bats" aria-hidden="true"><span>🦇</span><span>🦇</span></div>
-      <div class="brand-plank"><h1>BASAK WITCH</h1></div>
+      <img class="brand-art" src="./assets/brand-header.png" alt="BASAK WITCH"
+           onerror="this.hidden=true;document.getElementById('brand-slot').hidden=false">
+      <div class="brand-slot" id="brand-slot" hidden>
+        <strong>헤더 그림 자리</strong>
+        <span>assets/brand-header.png</span>
+      </div>
       <span id="booth-name" hidden></span>
     </header>
     <div class="drip" aria-hidden="true"></div>
@@ -58,7 +64,7 @@
         <div class="menu-grid" id="menu-grid"></div>
         <div class="sticky-action">
           <button class="primary-button split-button" id="open-cart" type="button" disabled>
-            <span>🧺 <b id="cart-count">0</b>개 담음</span><span id="cart-total">주문 확인</span>
+            <span><b id="cart-count">0</b>개 담음</span><span id="cart-total">주문 확인</span>
           </button>
         </div>
       </section>
@@ -75,7 +81,7 @@
         <p class="field-help">주문 확인이 필요할 때만 사용하며 공개되지 않고 행사 종료 후 삭제합니다.</p>
         <div class="sticky-action">
           <button class="primary-button split-button" id="create-order" type="button">
-            <span>🪄 주문 접수</span><span id="review-total">0원</span>
+            <span>주문 접수</span><span id="review-total">0원</span>
           </button>
         </div>
       </section>
@@ -116,7 +122,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
   <script src="./assets/supabase-config.js"></script>
-  <script src="./assets/supabase-store.js?v=202609232030"></script>
-  <script src="./assets/customer-supabase.js?v=202609232030"></script>
+  <script src="./assets/supabase-store.js?v=202609232200"></script>
+  <script src="./assets/customer-supabase.js?v=202609232200"></script>
 </body>
 </html>
