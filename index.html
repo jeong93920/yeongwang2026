@@ -3,21 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#eeeeea">
-  <title>감자에 싹이나서 이파리에 감자 주문</title>
-  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202608292215">
-  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=202608292215">
-  <link rel="stylesheet" href="./assets/styles.css?v=202609161350">
+  <meta name="theme-color" content="#110E0C">
+  <meta name="color-scheme" content="dark">
+  <title>BASAK WITCH · 주문하기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap">
+  <link rel="stylesheet" href="./assets/styles.css?v=202609231830">
 </head>
 <body class="customer-body">
   <div class="customer-shell">
+    <header class="brand">
+      <div class="brand-bats" aria-hidden="true"><span>🦇</span><span>🦇</span></div>
+      <div class="brand-plank"><h1>BASAK WITCH</h1></div>
+      <span id="booth-name" hidden></span>
+    </header>
+    <div class="drip" aria-hidden="true"></div>
+
     <div class="customer-wait-summary">
       <div>
-        <small>현재 주문 대기</small>
+        <small>가마솥 현황</small>
         <strong id="wait-time">대기 현황 불러오는 중</strong>
       </div>
-      <span>● 실시간</span>
-      <span id="booth-name" hidden></span>
+      <span class="live-badge">실시간</span>
     </div>
 
     <div class="step-progress" aria-label="주문 단계">
@@ -30,38 +39,38 @@
     <main>
       <section class="customer-step active" id="step-menu" aria-labelledby="menu-title">
         <div class="section-heading">
-          <div><p class="step-label">1 / 4</p><h2 id="menu-title">메뉴를 골라주세요</h2></div>
+          <div><p class="step-label">1 / 4</p><h2 id="menu-title">주문할 메뉴를 골라주세요</h2></div>
           <span class="subtle" id="menu-count"></span>
         </div>
         <div class="menu-grid" id="menu-grid"></div>
         <div class="sticky-action">
           <button class="primary-button split-button" id="open-cart" type="button" disabled>
-            <span><b id="cart-count">0</b>개 담음</span><span id="cart-total">주문 확인</span>
+            <span>🧺 <b id="cart-count">0</b>개 담음</span><span id="cart-total">주문 확인</span>
           </button>
         </div>
       </section>
 
       <section class="customer-step" id="step-review" aria-labelledby="review-title">
-        <button class="text-button back-button" data-back="menu" type="button">← 메뉴로</button>
+        <button class="text-button back-button" data-back="menu" type="button">← 메뉴로 돌아가기</button>
         <div class="section-heading"><div><p class="step-label">2 / 4</p><h2 id="review-title">주문을 확인해 주세요</h2></div></div>
         <div class="order-summary" id="order-summary"></div>
         <label class="field-label" for="payer-name">입금자 이름</label>
         <input class="text-input" id="payer-name" maxlength="20" autocomplete="name" placeholder="예: 김민수">
-        <p class="field-help">입금 확인에만 사용하며 손님 대기열에는 표시되지 않습니다.</p>
+        <p class="field-help">입금 확인에만 사용하며 손님 대기열에는 표시하지 않습니다. 행사 종료 후 삭제합니다.</p>
         <label class="field-label" for="contact">연락처</label>
         <input class="text-input" id="contact" type="tel" inputmode="numeric" maxlength="13" autocomplete="tel" placeholder="010-1234-5678">
         <p class="field-help">주문 확인이 필요할 때만 사용하며 공개되지 않고 행사 종료 후 삭제합니다.</p>
         <div class="sticky-action">
           <button class="primary-button split-button" id="create-order" type="button">
-            <span>주문 접수</span><span id="review-total">0원</span>
+            <span>🪄 주문 접수</span><span id="review-total">0원</span>
           </button>
         </div>
       </section>
 
       <section class="customer-step" id="step-payment" aria-labelledby="payment-title">
         <div class="section-heading"><div><p class="step-label">3 / 4</p><h2 id="payment-title">송금해 주세요</h2></div></div>
-        <p class="section-description">카카오페이나 토스로 바로 보내거나 계좌번호를 복사할 수 있어요.</p>
-        <div class="order-number-strip"><span>주문번호</span><strong id="payment-order-number">#—</strong></div>
+        <p class="section-description">토스나 카카오페이로 바로 보내거나 계좌번호를 복사할 수 있어요.</p>
+        <div class="order-number-strip"><span>내 주문번호</span><strong id="payment-order-number">#—</strong></div>
         <div class="payment-panel active" id="payment-account">
           <div class="account-card">
             <b class="payment-amount" data-order-total>0원</b>
@@ -73,13 +82,17 @@
             <button class="secondary-button" id="copy-account" type="button">계좌번호 복사</button>
           </div>
         </div>
-        <div class="sticky-action"><button class="primary-button split-button" id="payment-done" type="button"><span>송금했어요</span><span>대기 현황 보기</span></button></div>
+        <div class="sticky-action">
+          <button class="primary-button split-button" id="payment-done" type="button">
+            <span>송금했어요</span><span>대기 현황 보기 →</span>
+          </button>
+        </div>
       </section>
 
       <section class="customer-step" id="step-queue" aria-labelledby="queue-title">
-        <div class="section-heading"><div><p class="step-label">4 / 4</p><h2 id="queue-title">실시간 대기 현황</h2></div><span class="live-badge">● 연결됨</span></div>
+        <div class="section-heading"><div><p class="step-label">4 / 4</p><h2 id="queue-title">실시간 대기 현황</h2></div><span class="live-badge">연결됨</span></div>
         <div class="my-order-card" id="my-order-card"></div>
-        <div class="queue-heading"><h3>전체 대기열</h3><span>주문번호만 표시</span></div>
+        <div class="queue-heading"><h3>전체 대기열</h3><span>주문번호만 표시돼요</span></div>
         <div class="public-queue" id="public-queue"></div>
         <p class="queue-notice" id="queue-notice">상태는 자동으로 갱신됩니다.</p>
         <button class="text-button new-order-button" id="new-order" type="button">새 주문 시작하기</button>
@@ -90,7 +103,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
   <script src="./assets/supabase-config.js"></script>
-  <script src="./assets/supabase-store.js?v=202609211800"></script>
-  <script src="./assets/customer-supabase.js?v=202609211800"></script>
+  <script src="./assets/supabase-store.js?v=202609231830"></script>
+  <script src="./assets/customer-supabase.js?v=202609231830"></script>
 </body>
 </html>

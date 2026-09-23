@@ -25,7 +25,7 @@
 
   let state = {
     settings: {
-      boothName: '감자에 싹이나서 이파리에 감자', bankName: '', accountHolder: '', accountNumber: '',
+      boothName: 'BASAK WITCH', bankName: '', accountHolder: '', accountNumber: '',
       transferQrUrl: null, isOpen: true
     },
     menu: [],
@@ -46,7 +46,7 @@
     name: row.name,
     description: row.description || '',
     price: Number(row.price),
-    image: row.image_url || './assets/menu-placeholder.svg',
+    image: row.image_url || '',
     soldOut: row.sold_out,
     active: row.active,
     sortOrder: row.sort_order,

@@ -1,10 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
-  <title id="title">메뉴 사진 자리 표시자</title>
-  <desc id="desc">실제 메뉴 사진으로 교체할 회색 자리 표시자</desc>
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5e7eb"/><stop offset="1" stop-color="#f5f5f5"/></linearGradient></defs>
-  <rect width="800" height="600" fill="url(#g)"/>
-  <rect x="325" y="220" width="150" height="120" rx="18" fill="none" stroke="#a3a3a3" stroke-width="10"/>
-  <circle cx="370" cy="260" r="18" fill="#a3a3a3"/>
-  <path d="M340 320l58-55 38 35 25-22 30 42z" fill="#a3a3a3"/>
-  <text x="400" y="405" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="28" font-weight="700" fill="#737373">메뉴 사진</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-labelledby="ph-title ph-desc">
+  <title id="ph-title">메뉴 사진 자리 표시자</title>
+  <desc id="ph-desc">실제 메뉴 사진으로 교체할 잭오랜턴 자리 표시자</desc>
+
+  <rect width="600" height="600" fill="#14110F"/>
+  <circle cx="470" cy="118" r="86" fill="#F2911E" opacity="0.13"/>
+
+  <g transform="translate(56.8 0) scale(0.95)">
+    <!-- 꼭지와 잎 -->
+    <ellipse cx="256" cy="150" rx="20" ry="46" fill="#4F8C25"/>
+    <ellipse cx="300" cy="158" rx="44" ry="15" fill="#4F8C25"/>
+
+    <!-- 호박 몸통 -->
+    <g fill="#F2911E">
+      <ellipse cx="147" cy="300" rx="69" ry="129"/>
+      <ellipse cx="365" cy="300" rx="69" ry="129"/>
+      <ellipse cx="196" cy="300" rx="96" ry="149"/>
+      <ellipse cx="316" cy="300" rx="96" ry="149"/>
+      <ellipse cx="256" cy="300" rx="122" ry="156"/>
+    </g>
+    <g fill="none" stroke="#C96F0C" stroke-width="3">
+      <ellipse cx="196" cy="300" rx="96" ry="149"/>
+      <ellipse cx="316" cy="300" rx="96" ry="149"/>
+    </g>
+
+    <!-- 얼굴 -->
+    <g fill="#14110F">
+      <polygon points="168,248 234,248 201,318"/>
+      <polygon points="278,248 344,248 311,318"/>
+      <polygon points="240,352 272,352 256,312"/>
+      <polygon points="160,372 200,372 213,400 226,372 286,372 299,400 312,372 352,372
+                       352,416 320,416 307,392 294,416 218,416 205,392 192,416 160,416"/>
+    </g>
+  </g>
+
+  <text x="300" y="512" text-anchor="middle" fill="#A89881"
+        font-family="Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif"
+        font-size="30" font-weight="700">메뉴 사진 준비 중</text>
 </svg>

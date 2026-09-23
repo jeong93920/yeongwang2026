@@ -3,7 +3,6 @@
 
   const store = window.BoothStore;
   const cart = new Map();
-  const cartOptions = new Map();
   let activeOrderId = null;
   let toastTimer;
 
@@ -15,10 +14,6 @@
   const $ = selector => document.querySelector(selector);
   const MAX_QUANTITY = 20;
   const prepSpeedLabels = { fast: '빨라요', normal: '적당해요', slow: '늦어요' };
-  const stockGroups = {
-    potato: { itemName: '감자치즈누룽지', menuNames: new Set(['감자치즈누룽지', '세트메뉴']) },
-    kimchi: { itemName: '김치말이국수', menuNames: new Set(['김치말이국수', '세트메뉴']) }
-  };
   const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
   function showStep(name) {
@@ -40,11 +35,7 @@
   function getCartItems() {
     return [...cart.entries()]
       .filter(([, quantity]) => quantity > 0)
-      .map(([menuId, quantity]) => ({
-        menuId,
-        quantity,
-        noCucumber: Boolean(cartOptions.get(menuId)?.noCucumber)
-      }));
+      .map(([menuId, quantity]) => ({ menuId, quantity }));
   }
 
   function cartTotal(state) {
@@ -54,47 +45,19 @@
     }, 0);
   }
 
-  function getStock(state, group) {
-    const config = stockGroups[group];
-    const item = state.menu.find(menuItem => menuItem.name === config.itemName);
-    return item?.stockRemaining ?? null;
+  function menuStockRemaining(item) {
+    return item && item.stockRemaining != null ? item.stockRemaining : null;
   }
 
-  function cartStockUnits(state, group) {
-    const config = stockGroups[group];
-    return getCartItems().reduce((total, item) => {
-      const menu = state.menu.find(menuItem => menuItem.id === item.menuId);
-      return total + (menu && config.menuNames.has(menu.name) ? item.quantity : 0);
-    }, 0);
-  }
-
-  function stockGroupsForMenu(name) {
-    return Object.entries(stockGroups)
-      .filter(([, config]) => config.menuNames.has(name))
-      .map(([group]) => group);
-  }
-
-  function menuStockRemaining(state, name) {
-    const stocks = stockGroupsForMenu(name)
-      .map(group => getStock(state, group))
-      .filter(stock => stock != null);
-    return stocks.length ? Math.min(...stocks) : null;
-  }
-
-  function stockLimitReached(state, name) {
-    return stockGroupsForMenu(name).some(group => {
-      const stock = getStock(state, group);
-      return stock != null && cartStockUnits(state, group) >= stock;
-    });
+  function stockLimitReached(item) {
+    const stock = menuStockRemaining(item);
+    return stock != null && (cart.get(item.id) || 0) >= stock;
   }
 
   function pruneCart(state) {
     [...cart.keys()].forEach(menuId => {
       const menu = state.menu.find(item => item.id === menuId);
-      if (!menu || menu.soldOut || !menu.active) {
-        cart.delete(menuId);
-        cartOptions.delete(menuId);
-      }
+      if (!menu || menu.soldOut || !menu.active) cart.delete(menuId);
     });
   }
 
@@ -105,7 +68,7 @@
     $('#wait-time').textContent = state.settings.isOpen
       ? (waitingTeams ? `지금 주문하면 앞에 ${waitingTeams}팀` : '지금 주문하면 바로 접수돼요')
       : '지금은 주문 준비 중이에요';
-    const available = state.menu.filter(item => !item.soldOut && menuStockRemaining(state, item.name) !== 0);
+    const available = state.menu.filter(item => !item.soldOut && menuStockRemaining(item) !== 0);
     $('#menu-count').textContent = `${available.length}개 메뉴`;
 
     if (!state.settings.isOpen || !state.menu.length) {
@@ -117,19 +80,15 @@
       const quantity = cart.get(item.id) || 0;
       const safeName = escapeHtml(item.name);
       const safeDescription = escapeHtml(item.description);
-      const image = escapeHtml(item.image || './assets/menu-placeholder.svg');
-      const supportsNoCucumber = ['김치말이국수', '세트메뉴'].includes(item.name);
-      const noCucumber = Boolean(cartOptions.get(item.id)?.noCucumber);
-      const stockRemaining = menuStockRemaining(state, item.name);
-      const sharedStockOut = stockRemaining === 0;
-      const unavailable = item.soldOut || sharedStockOut;
-      const reachedStockLimit = stockLimitReached(state, item.name);
-      const stockLabel = item.name === '세트메뉴' ? '세트 가능' : '남은 수량';
+      const image = item.image ? escapeHtml(item.image) : '';
+      const stockRemaining = menuStockRemaining(item);
+      const unavailable = item.soldOut || stockRemaining === 0;
+      const reachedStockLimit = stockLimitReached(item);
       const stockText = stockRemaining != null
-        ? `<div class="prep-speed">${stockLabel} · ${stockRemaining}개</div>`
+        ? `<div class="prep-speed">남은 수량 · ${stockRemaining}개</div>`
         : '';
-      return `<article class="menu-card ${unavailable ? 'sold-out' : ''}">
-        <img src="${image}" alt="${safeName} 사진">
+      return `<article class="menu-card ${image ? '' : 'no-image'} ${unavailable ? 'sold-out' : ''}">
+        ${image ? `<img src="${image}" alt="${safeName} 사진">` : ''}
         ${unavailable ? '<span class="sold-out-label">품절</span>' : ''}
         <div class="menu-info"><h3>${safeName}</h3><p>${safeDescription || '&nbsp;'}</p>
           <div class="prep-speed prep-speed-${item.prepSpeed}">소요시간 · ${prepSpeedLabels[item.prepSpeed] || prepSpeedLabels.normal}</div>
@@ -137,9 +96,8 @@
           <div class="menu-card-footer"><strong>${store.formatPrice(item.price)}</strong>
             <div class="quantity-control">
               ${quantity ? `<button class="minus" type="button" data-menu="${item.id}" data-change="-1" aria-label="${safeName} 수량 줄이기">−</button><span>${quantity}</span>` : ''}
-              <button type="button" data-menu="${item.id}" data-change="1" aria-label="${safeName} 담기" style="${quantity ? '' : 'width:auto;padding:0 10px'}" ${unavailable || reachedStockLimit || quantity >= MAX_QUANTITY ? 'disabled' : ''}>${quantity ? '+' : '담기'}</button>
+              <button class="${quantity ? '' : 'add'}" type="button" data-menu="${item.id}" data-change="1" aria-label="${safeName} 담기" ${unavailable || reachedStockLimit || quantity >= MAX_QUANTITY ? 'disabled' : ''}>${quantity ? '+' : '담기'}</button>
             </div>
-            ${supportsNoCucumber && quantity ? `<label class="menu-option"><input type="checkbox" data-no-cucumber="${item.id}" ${noCucumber ? 'checked' : ''}><span>오이 빼기</span></label>` : ''}
           </div></div></article>`;
     }).join('');
 
@@ -149,29 +107,20 @@
         const currentState = store.getState();
         const menu = currentState.menu.find(item => item.id === menuId);
         const change = Number(button.dataset.change);
-        if (change > 0 && menu && stockLimitReached(currentState, menu.name)) {
-          const stockRemaining = menuStockRemaining(currentState, menu.name);
-          toast(`${menu.name}은 ${stockRemaining}개만 더 주문할 수 있어요.`);
+        if (change > 0 && menu && stockLimitReached(menu)) {
+          toast(`${menu.name}은(는) ${menuStockRemaining(menu)}개까지만 담을 수 있어요.`);
           return;
         }
         const previous = cart.get(menuId) || 0;
         const next = Math.min(MAX_QUANTITY, Math.max(0, previous + change));
         if (next === MAX_QUANTITY && previous === MAX_QUANTITY) toast(`메뉴당 최대 ${MAX_QUANTITY}개까지 담을 수 있어요.`);
         if (next) cart.set(menuId, next);
-        else {
-          cart.delete(menuId);
-          cartOptions.delete(menuId);
-        }
+        else cart.delete(menuId);
         renderMenu(store.getState());
         renderCartBar(store.getState());
       });
     });
 
-    document.querySelectorAll('[data-no-cucumber]').forEach(input => {
-      input.addEventListener('change', () => {
-        cartOptions.set(input.dataset.noCucumber, { noCucumber: input.checked });
-      });
-    });
   }
 
   function renderCartBar(state) {
@@ -185,8 +134,7 @@
     const rows = getCartItems().map(item => {
       const menu = state.menu.find(menuItem => menuItem.id === item.menuId);
       if (!menu) return '';
-      const option = item.noCucumber ? '<small class="summary-option">오이 빼기</small>' : '';
-      return `<div class="summary-row summary-item"><div>${escapeHtml(menu.name)}${option}<small>${store.formatPrice(menu.price)} × ${item.quantity}</small></div><strong>${store.formatPrice(menu.price * item.quantity)}</strong></div>`;
+      return `<div class="summary-row summary-item"><div>${escapeHtml(menu.name)}<small>${store.formatPrice(menu.price)} × ${item.quantity}</small></div><strong>${store.formatPrice(menu.price * item.quantity)}</strong></div>`;
     }).join('');
     const total = cartTotal(state);
     $('#order-summary').innerHTML = `${rows}<div class="summary-row total"><span>총 금액</span><strong>${store.formatPrice(total)}</strong></div>`;
@@ -326,12 +274,6 @@
     }
   });
 
-  function selectPaymentTab(name) {
-    document.querySelectorAll('[data-payment-tab]').forEach(tab => tab.classList.toggle('active', tab.dataset.paymentTab === name));
-    document.querySelectorAll('.payment-panel').forEach(panel => panel.classList.toggle('active', panel.id === `payment-${name}`));
-  }
-  document.querySelectorAll('[data-payment-tab]').forEach(button => button.addEventListener('click', () => selectPaymentTab(button.dataset.paymentTab)));
-
   $('#copy-account').addEventListener('click', async event => {
     const number = $('#account-number').textContent;
     if (!store.getState().settings.accountNumber) return;
@@ -373,7 +315,6 @@
     store.clearCurrentOrder();
     activeOrderId = null;
     cart.clear();
-    cartOptions.clear();
     $('#payer-name').value = '';
     $('#contact').value = '';
     renderMenu(store.getState());
@@ -386,10 +327,6 @@
     renderCartBar(state);
     if (activeOrderId && $('#step-queue').classList.contains('active')) renderQueue(state);
   });
-
-  document.querySelector('.eyebrow').textContent = 'ORDER_SYS / QR';
-  $('#payer-name').nextElementSibling.textContent = '입금 확인에만 사용하며 손님 대기열에는 표시하지 않습니다. 행사 종료 후 삭제합니다.';
-  selectPaymentTab('account');
 
   store.ready().then(() => {
     activeOrderId = store.getCurrentOrderId();

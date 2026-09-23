@@ -3,17 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#eeeeea">
-  <title>부스 주문 관리</title>
-  <link rel="icon" type="image/png" href="../assets/favicon.png?v=202608292215">
-  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=202608292215">
-  <link rel="stylesheet" href="../assets/styles.css?v=202609212030">
+  <meta name="theme-color" content="#110E0C">
+  <meta name="color-scheme" content="dark">
+  <title>BASAK WITCH · 주방 현황</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap">
+  <link rel="stylesheet" href="../assets/styles.css?v=202609231830">
 </head>
 <body class="admin-body">
   <main class="admin-login-wrap" id="admin-login">
     <section class="admin-login-card" aria-labelledby="login-title">
-      <p class="eyebrow">ADMIN_SYS / AUTH</p>
-      <h1 id="login-title">관리자 로그인</h1>
+      <p class="eyebrow">BASAK WITCH</p>
+      <h1 id="login-title">마녀의 작업실</h1>
       <p id="login-status">로그인 상태를 확인하고 있습니다.</p>
       <div class="admin-login-email">ipad93920@gmail.com</div>
       <label class="field-label login-password-label" for="admin-password">비밀번호</label>
@@ -28,7 +31,7 @@
 
   <div id="admin-app" hidden>
     <header class="admin-header kds-header">
-      <div><p class="eyebrow">KITCHEN_DISPLAY / LIVE</p><h1>주방 주문 현황</h1></div>
+      <div><p class="eyebrow">BASAK WITCH · 주방</p><h1>🎃 주문 현황</h1></div>
       <div class="admin-header-actions">
         <a class="secondary-button link-button" href="../index.html" target="_blank" rel="noopener noreferrer">고객 화면</a>
         <button class="secondary-button" id="admin-logout" type="button">로그아웃</button>
@@ -38,15 +41,15 @@
     <main class="admin-main kds-main">
       <section class="kds-total-panel" aria-labelledby="kds-total-title">
         <div class="panel-heading kds-total-heading">
-          <div><p class="eyebrow">NOW TO MAKE</p><h2 id="kds-total-title">지금 만들어야 할 메뉴</h2></div>
-          <span class="live-badge">● 실시간 · 입금 확인된 주문만 합산</span>
+          <div><p class="eyebrow">NOW BREWING</p><h2 id="kds-total-title">지금 만들어야 할 메뉴</h2></div>
+          <span class="live-badge">실시간 · 조리 중 주문만 합산</span>
         </div>
         <div class="kds-menu-totals" id="kds-menu-totals"></div>
       </section>
 
       <div class="kds-workspace">
         <section class="admin-panel orders-panel kds-orders-panel">
-          <div class="panel-heading"><div><h2>주문별 작업</h2><p>오래된 주문부터 처리합니다.</p></div><span class="live-badge">● 실시간</span></div>
+          <div class="panel-heading"><div><h2>주문별 작업</h2><p>오래된 주문부터 처리합니다.</p></div><span class="live-badge">실시간</span></div>
           <div class="filter-row" id="order-filters">
             <button class="active" type="button" data-filter="active">주문</button>
             <button type="button" data-filter="payment_pending">입금 확인</button>
@@ -85,7 +88,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
   <script src="../assets/supabase-config.js"></script>
-  <script src="../assets/supabase-store.js?v=202609211800"></script>
-  <script src="../assets/admin-supabase.js?v=202609212030"></script>
+  <script src="../assets/supabase-store.js?v=202609231830"></script>
+  <script src="../assets/admin-supabase.js?v=202609231830"></script>
 </body>
 </html>
