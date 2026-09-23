@@ -50,7 +50,9 @@
 
   --font-body: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
     "Apple SD Gothic Neo", "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
-  --font-display: "Black Han Sans", var(--font-body);
+  /* 제목용: 한글은 도현체, 영문은 호러 디스플레이 Creepster */
+  --font-display: "Do Hyeon", var(--font-body);
+  --font-spooky: "Creepster", "Do Hyeon", var(--font-body);
 }
 
 * { box-sizing: border-box; }
@@ -89,7 +91,8 @@ body::before {
     radial-gradient(1.4px 1.4px at 57% 77%, rgba(251, 243, 218, .28), transparent 60%),
     radial-gradient(1.2px 1.2px at 20% 88%, rgba(251, 243, 218, .32), transparent 60%),
     radial-gradient(900px 620px at 84% -12%, rgba(242, 145, 30, .13), transparent 70%),
-    radial-gradient(760px 520px at 6% 104%, rgba(124, 194, 68, .09), transparent 70%);
+    radial-gradient(760px 520px at 6% 104%, rgba(124, 194, 68, .09), transparent 70%),
+    radial-gradient(120% 42% at 50% 102%, rgba(155, 123, 239, .10), transparent 72%);
 }
 
 /* 종이결 노이즈 */
@@ -150,13 +153,14 @@ a { color: inherit; }
 
 /* 슬라임이 흘러내리는 구분선 */
 .drip {
-  height: 18px;
-  margin: 0 -18px 22px;
+  height: 32px;
+  margin: 0 -18px 24px;
   background:
-    radial-gradient(circle at 50% 0, var(--slime) 7.5px, transparent 8px) 0 0 / 31px 100% repeat-x,
-    radial-gradient(circle at 50% 0, var(--slime) 5.5px, transparent 6px) 15px 0 / 53px 100% repeat-x,
-    linear-gradient(var(--slime), var(--slime)) 0 0 / 100% 7px repeat-x;
-  filter: drop-shadow(0 3px 10px rgba(124, 194, 68, .35));
+    radial-gradient(ellipse 9px 19px at 50% 0, var(--slime) 99%, transparent 100%) 5px 0 / 47px 100% repeat-x,
+    radial-gradient(ellipse 6px 12px at 50% 0, var(--slime) 99%, transparent 100%) 28px 0 / 37px 100% repeat-x,
+    radial-gradient(ellipse 5px 27px at 50% 0, var(--slime) 99%, transparent 100%) 17px 0 / 73px 100% repeat-x,
+    linear-gradient(var(--slime), var(--slime)) 0 0 / 100% 9px repeat-x;
+  filter: drop-shadow(0 4px 12px rgba(124, 194, 68, .4));
 }
 
 .live-badge {
@@ -300,6 +304,7 @@ a { color: inherit; }
 .customer-body { background: var(--night); }
 
 .customer-shell {
+  position: relative;
   width: min(100%, 620px);
   min-height: 100vh;
   margin: 0 auto;
@@ -309,6 +314,21 @@ a { color: inherit; }
   border-right: 1px solid var(--line);
   box-shadow: 0 0 80px rgba(0, 0, 0, .6);
 }
+
+/* 위쪽 두 모서리에 걸린 거미줄 */
+.customer-shell::before,
+.customer-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 78px;
+  height: 78px;
+  opacity: .15;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23FBF3DA' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M0 0L100 0M0 0L92 38M0 0L70 70M0 0L38 92M0 0L0 100'/%3E%3Cpath d='M30 0Q12 12 0 30M56 0Q22 22 0 56M82 0Q33 33 0 82'/%3E%3C/g%3E%3C/svg%3E") no-repeat top center / contain;
+}
+.customer-shell::before { left: 0; }
+.customer-shell::after { right: 0; transform: scaleX(-1); }
 
 .brand {
   position: relative;
@@ -329,12 +349,18 @@ a { color: inherit; }
   background: radial-gradient(circle at 34% 30%, #FFC163, var(--pumpkin) 58%, var(--pumpkin-deep));
   opacity: .22;
   filter: blur(1px);
+  animation: moonlight 7s ease-in-out infinite;
+}
+@keyframes moonlight {
+  0%, 100% { opacity: .2; }
+  45% { opacity: .32; }
+  62% { opacity: .22; }
 }
 
 .brand-bats {
   position: absolute;
-  top: 16px;
-  right: 6px;
+  top: 22px;
+  left: 92px;
   display: flex;
   gap: 12px;
   font-size: 17px;
@@ -357,7 +383,8 @@ a { color: inherit; }
   background:
     repeating-linear-gradient(94deg, rgba(0, 0, 0, .07) 0 2px, transparent 2px 11px),
     linear-gradient(180deg, var(--wood-hi), var(--wood) 52%, var(--wood-lo));
-  box-shadow: 0 5px 0 var(--wood-edge), 0 18px 34px rgba(0, 0, 0, .55);
+  box-shadow: 0 5px 0 var(--wood-edge), 0 18px 34px rgba(0, 0, 0, .55),
+              0 0 46px rgba(242, 145, 30, .22);
 }
 .brand-plank::before,
 .brand-plank::after {
@@ -377,12 +404,12 @@ a { color: inherit; }
 .brand-plank h1 {
   margin: 0;
   color: #2B1707;
-  font-family: var(--font-display);
-  font-size: clamp(30px, 9.4vw, 46px);
+  font-family: var(--font-spooky);
+  font-size: clamp(34px, 10.6vw, 52px);
   font-weight: 400;
-  line-height: 1;
-  letter-spacing: .035em;
-  text-shadow: 0 1px 0 rgba(255, 214, 158, .34), 0 -1px 0 rgba(0, 0, 0, .3);
+  line-height: 1.05;
+  letter-spacing: .06em;
+  text-shadow: 0 1px 0 rgba(255, 216, 160, .45), 0 -1px 0 rgba(0, 0, 0, .35);
 }
 
 #booth-name { display: none; }
@@ -397,13 +424,39 @@ a { color: inherit; }
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: linear-gradient(180deg, var(--night-3), var(--night-2));
-  box-shadow: inset 0 1px 0 rgba(251, 243, 218, .05);
+  box-shadow: inset 0 1px 0 rgba(251, 243, 218, .05),
+              inset 0 -22px 34px -28px rgba(124, 194, 68, .55);
 }
-.customer-wait-summary::before {
-  content: "🧪";
+.cauldron {
   flex: 0 0 auto;
-  font-size: 24px;
-  filter: drop-shadow(0 0 10px rgba(124, 194, 68, .5));
+  width: 34px;
+  height: 34px;
+  overflow: visible;
+}
+.cauldron-pot { fill: #372C25; }
+.cauldron-rim { fill: #57463A; }
+.cauldron-brew {
+  fill: var(--slime);
+  filter: drop-shadow(0 0 6px rgba(124, 194, 68, .85));
+}
+.cauldron-legs {
+  fill: none;
+  stroke: #372C25;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+.cauldron-bubbles circle {
+  fill: var(--slime);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bubble 2.8s ease-in-out infinite;
+}
+.cauldron-bubbles circle:nth-child(2) { animation-delay: .9s; }
+.cauldron-bubbles circle:nth-child(3) { animation-delay: 1.7s; }
+@keyframes bubble {
+  0% { transform: translateY(3px) scale(.6); opacity: 0; }
+  35% { opacity: .95; }
+  100% { transform: translateY(-6px) scale(1); opacity: 0; }
 }
 .customer-wait-summary > div { flex: 1 1 auto; min-width: 0; }
 .customer-wait-summary small {
@@ -471,10 +524,11 @@ a { color: inherit; }
 .step-label::before { content: "STEP "; }
 .section-heading h2 {
   margin: 0;
-  font-size: 25px;
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -.035em;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -.01em;
   word-break: keep-all;
 }
 .section-heading .subtle { flex: 0 0 auto; }
@@ -501,15 +555,27 @@ a { color: inherit; }
   box-shadow: 0 8px 22px rgba(0, 0, 0, .42);
 }
 
-.menu-card.no-image .sold-out-label {
-  position: static;
-  align-self: flex-start;
-  margin: 13px 13px 0;
+/* 실제 메뉴 사진이 들어갈 자리 */
+.menu-photo-slot {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background:
+    repeating-linear-gradient(135deg, rgba(107, 69, 34, .09) 0 9px, transparent 9px 18px),
+    var(--cream-2);
+  border-bottom: 1px dashed rgba(107, 69, 34, .45);
+}
+.menu-photo-slot span {
+  color: rgba(107, 69, 34, .55);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .02em;
 }
 .menu-card img {
   display: block;
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   background: var(--night-3);
   border-bottom: 1px solid rgba(107, 69, 34, .35);
@@ -549,17 +615,19 @@ a { color: inherit; }
   color: var(--cream-ink);
 }
 .menu-info h3 {
-  margin: 0 0 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin: 0 0 5px;
   overflow: hidden;
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1.3;
-  letter-spacing: -.03em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -.01em;
+  word-break: keep-all;
 }
 .menu-info p {
-  min-height: 17px;
   margin: 0 0 10px;
   overflow: hidden;
   color: #6B594A;
@@ -822,11 +890,12 @@ a { color: inherit; }
 }
 .my-order-number {
   color: var(--pumpkin);
-  font-family: var(--font-display);
-  font-size: 54px;
+  font-family: var(--font-spooky);
+  font-size: 58px;
   font-weight: 400;
-  line-height: .92;
-  letter-spacing: -.01em;
+  line-height: 1;
+  letter-spacing: .02em;
+  text-shadow: 0 0 22px rgba(242, 145, 30, .45);
 }
 .my-order-status { text-align: right; }
 .my-order-status strong {
@@ -863,9 +932,10 @@ a { color: inherit; }
 }
 .queue-heading h3 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: -.02em;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 .queue-heading span { color: var(--faint); font-size: 12px; }
 
@@ -985,9 +1055,10 @@ a { color: inherit; }
 }
 .admin-login-card h1 {
   margin: 0;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -.03em;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 .admin-login-card > p:not(.eyebrow) {
   margin: 10px 0 18px;
@@ -1029,9 +1100,10 @@ a { color: inherit; }
 }
 .admin-header h1 {
   margin: 0;
-  font-size: 27px;
-  font-weight: 800;
-  letter-spacing: -.035em;
+  font-family: var(--font-display);
+  font-size: 29px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 .admin-header .eyebrow { margin-bottom: 6px; }
 .admin-header-actions { display: flex; gap: 8px; }
@@ -1052,9 +1124,10 @@ a { color: inherit; }
 }
 .panel-heading h2 {
   margin: 0;
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -.03em;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 .panel-heading p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
 

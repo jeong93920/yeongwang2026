@@ -6,11 +6,13 @@
   <meta name="theme-color" content="#110E0C">
   <meta name="color-scheme" content="dark">
   <title>BASAK WITCH · 주문하기</title>
+  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202609232030">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=202609232030">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap">
-  <link rel="stylesheet" href="./assets/styles.css?v=202609231830">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Do+Hyeon&display=swap">
+  <link rel="stylesheet" href="./assets/styles.css?v=202609232030">
 </head>
 <body class="customer-body">
   <div class="customer-shell">
@@ -22,8 +24,19 @@
     <div class="drip" aria-hidden="true"></div>
 
     <div class="customer-wait-summary">
+        <svg class="cauldron" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <g class="cauldron-bubbles">
+            <circle cx="12" cy="6.5" r="1.7"/>
+            <circle cx="17.5" cy="3.6" r="1.2"/>
+            <circle cx="21" cy="7" r="1"/>
+          </g>
+          <path class="cauldron-legs" d="M9 25.5 6.5 30M23 25.5 25.5 30"/>
+          <path class="cauldron-pot" d="M3 11c.5 10.5 6 16.5 13 16.5S28.5 21.5 29 11z"/>
+          <ellipse class="cauldron-rim" cx="16" cy="11" rx="13.4" ry="3.4"/>
+          <ellipse class="cauldron-brew" cx="16" cy="11" rx="10.4" ry="2.4"/>
+        </svg>
       <div>
-        <small>가마솥 현황</small>
+        <small>주방 현황</small>
         <strong id="wait-time">대기 현황 불러오는 중</strong>
       </div>
       <span class="live-badge">실시간</span>
@@ -103,7 +116,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
   <script src="./assets/supabase-config.js"></script>
-  <script src="./assets/supabase-store.js?v=202609231830"></script>
-  <script src="./assets/customer-supabase.js?v=202609231830"></script>
+  <script src="./assets/supabase-store.js?v=202609232030"></script>
+  <script src="./assets/customer-supabase.js?v=202609232030"></script>
 </body>
 </html>

@@ -87,10 +87,10 @@
       const stockText = stockRemaining != null
         ? `<div class="prep-speed">남은 수량 · ${stockRemaining}개</div>`
         : '';
-      return `<article class="menu-card ${image ? '' : 'no-image'} ${unavailable ? 'sold-out' : ''}">
-        ${image ? `<img src="${image}" alt="${safeName} 사진">` : ''}
+      return `<article class="menu-card ${unavailable ? 'sold-out' : ''}">
+        ${image ? `<img src="${image}" alt="${safeName} 사진">` : '<div class="menu-photo-slot" aria-hidden="true"><span>사진 준비 중</span></div>'}
         ${unavailable ? '<span class="sold-out-label">품절</span>' : ''}
-        <div class="menu-info"><h3>${safeName}</h3><p>${safeDescription || '&nbsp;'}</p>
+        <div class="menu-info"><h3>${safeName}</h3>${safeDescription ? `<p>${safeDescription}</p>` : ''}
           <div class="prep-speed prep-speed-${item.prepSpeed}">소요시간 · ${prepSpeedLabels[item.prepSpeed] || prepSpeedLabels.normal}</div>
           ${stockText}
           <div class="menu-card-footer"><strong>${store.formatPrice(item.price)}</strong>

@@ -15,7 +15,8 @@ Supabase에 연결된 정적 웹앱으로, GitHub Pages에 배포합니다.
 | 파치먼트 크림 (메뉴 카드) | `#FBF3DA` |
 | 우드 (브랜드 간판) | `#8A5A2F` |
 
-- 본문 Pretendard, 간판·주문번호 Black Han Sans
+- 본문 Pretendard, 제목 도현체(Do Hyeon), 간판·주문번호 Creepster
+- 메뉴 사진이 없으면 카드에 4:3 빈 자리를 남겨 둡니다 (`.menu-photo-slot`)
 - 고객 화면은 나무 간판 로고 + 흘러내리는 슬라임 구분선 + 양피지 메뉴 카드
 - 관리자 주방 화면은 상태별 색으로 구분합니다.
   입금 대기 `bone` / 접수 `potion` / 조리 중 `pumpkin` / 수령 가능 `slime` / 취소 `blood`
