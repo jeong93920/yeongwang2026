@@ -177,10 +177,10 @@
     const minPrice = unavailable ? 0
       : Math.min(...availableToasts.map(item => item.price)) + Math.min(...availableDrinks.map(item => item.price)) - SET_DISCOUNT;
     const count = getCartItems().filter(line => line.setDrinkId).reduce((sum, line) => sum + line.quantity, 0);
-    return `<li class="menu-row ${unavailable ? 'sold-out' : ''}">
+    return `<li class="menu-row set-row ${unavailable ? 'sold-out' : ''}">
       <div class="menu-row-main">
         <div class="menu-row-title"><h4>토스트 + 음료 세트</h4><span class="menu-dots" aria-hidden="true"></span><strong>${unavailable ? '—' : `${store.formatPrice(minPrice)}~`}</strong></div>
-        <p class="menu-row-note">원하는 토스트와 음료를 골라주세요 · 정가에서 ${store.formatPrice(SET_DISCOUNT)} 할인</p>
+        <p class="menu-row-note"><span class="discount-badge">${store.formatPrice(SET_DISCOUNT)} 할인</span> 원하는 토스트와 음료를 골라주세요</p>
       </div>
       <div class="menu-row-action">${unavailable
         ? '<span class="sold-out-label">품절</span>'
