@@ -179,8 +179,8 @@
     const count = getCartItems().filter(line => line.setDrinkId).reduce((sum, line) => sum + line.quantity, 0);
     return `<li class="menu-row set-row ${unavailable ? 'sold-out' : ''}">
       <div class="menu-row-main">
-        <div class="menu-row-title"><h4>토스트 + 음료 세트</h4><span class="menu-dots" aria-hidden="true"></span><strong>${unavailable ? '—' : `${store.formatPrice(minPrice)}~`}</strong></div>
-        <p class="menu-row-note">${setDiscount(state) ? `<span class="discount-badge">${store.formatPrice(setDiscount(state))} 할인</span> ` : ''}원하는 토스트와 음료를 골라주세요</p>
+        <div class="menu-row-title"><h4>바삭 세트</h4><span class="menu-dots" aria-hidden="true"></span><strong>${unavailable ? '—' : `${store.formatPrice(minPrice)}~`}</strong></div>
+        <p class="menu-row-note">${setDiscount(state) ? `<span class="discount-badge">${store.formatPrice(setDiscount(state))} 할인</span> ` : ''}토스트 + 음료를 골라주세요</p>
       </div>
       <div class="menu-row-action">${unavailable
         ? '<span class="sold-out-label">품절</span>'
@@ -256,7 +256,7 @@
     if (sheet.drinkId && !isAvailable(findMenu(state, sheet.drinkId))) sheet.drinkId = null;
     const drink = findMenu(state, sheet.drinkId);
     if (!drink || !drink.altName) sheet.drinkAlt = false;
-    $('#sheet-title').textContent = '토스트 + 음료 세트';
+    $('#sheet-title').textContent = '바삭 세트';
     body.innerHTML = `<fieldset class="choice-group"><legend>토스트 선택</legend>
         ${toasts.map(item => radio('toast', item.id, item.id === sheet.toastId, escapeHtml(item.name), store.formatPrice(item.price), !isAvailable(item))).join('')}
       </fieldset>
@@ -301,7 +301,7 @@
       if (!name) return '';
       const price = linePrice(state, line);
       const spec = { menuId: line.menuId, alt: line.alt, setDrinkId: line.setDrinkId, setDrinkAlt: line.setDrinkAlt };
-      const tag = line.setDrinkId ? '<span class="set-tag">세트</span>' : '';
+      const tag = line.setDrinkId ? '<span class="set-tag">바삭 세트</span>' : '';
       return `<div class="summary-row summary-item">
         <div>${tag}${escapeHtml(name)}<small>${store.formatPrice(price)} × ${line.quantity}</small></div>
         <div class="summary-line-end">
