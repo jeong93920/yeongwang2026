@@ -6,10 +6,10 @@
   <meta name="theme-color" content="#FFFFFF">
   <meta name="color-scheme" content="light">
   <title>BASAK WITCH · 주방 현황</title>
-  <link rel="icon" type="image/png" href="../assets/favicon.png?v=202610121500">
-  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=202610121500">
+  <link rel="icon" type="image/png" href="../assets/favicon.png?v=202610121700">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=202610121700">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-  <link rel="stylesheet" href="../assets/styles.css?v=202610121500">
+  <link rel="stylesheet" href="../assets/styles.css?v=202610121700">
 </head>
 <body class="admin-body">
   <main class="admin-login-wrap" id="admin-login">
@@ -77,6 +77,13 @@
         <summary>메뉴 가격·판매·품절 설정</summary>
         <section class="admin-panel menu-panel">
           <div class="panel-heading"><div><h2>메뉴 관리</h2><p>운영 중 필요할 때만 사용하세요.</p></div></div>
+          <div class="set-discount-editor">
+            <div><strong>세트 할인 금액</strong><small>토스트 + 음료 세트를 고르면 두 메뉴 정가 합계에서 빼는 금액입니다.</small></div>
+            <div class="menu-editor-controls">
+              <label><span class="sr-only">세트 할인 금액</span><input class="price-input" id="set-discount" type="number" min="0" step="100" inputmode="numeric" value="500" aria-label="세트 할인 금액"></label>
+              <button class="stock-button" id="save-set-discount" type="button">할인 저장</button>
+            </div>
+          </div>
           <div class="admin-menu-list" id="admin-menu-list"></div>
           <div class="privacy-note"><strong>공개 범위</strong><br>손님 화면에는 주문번호와 상태만 표시됩니다. 메뉴·입금자명·연락처는 관리자 화면에서만 확인합니다.</div>
         </section>
@@ -87,7 +94,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
   <script src="../assets/supabase-config.js"></script>
-  <script src="../assets/supabase-store.js?v=202610121500"></script>
-  <script src="../assets/admin-supabase.js?v=202610121500"></script>
+  <script src="../assets/supabase-store.js?v=202610121700"></script>
+  <script src="../assets/admin-supabase.js?v=202610121700"></script>
 </body>
 </html>

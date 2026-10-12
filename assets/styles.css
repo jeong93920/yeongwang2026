@@ -667,6 +667,20 @@ a { color: inherit; }
   cursor: pointer;
 }
 .menu-settings[open] summary { margin-bottom: 12px; }
+.set-discount-editor {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #F3D3AE;
+  border-radius: var(--radius-sm);
+  background: var(--highlight-soft);
+}
+.set-discount-editor strong { display: block; }
+.set-discount-editor small { color: var(--muted); font-size: 12px; }
 .admin-menu-list { display: grid; gap: 10px; margin-top: 14px; }
 .admin-menu-item {
   display: grid;

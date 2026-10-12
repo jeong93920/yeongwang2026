@@ -15,7 +15,6 @@
   const steps = ['menu', 'review', 'payment', 'queue'];
   const $ = selector => document.querySelector(selector);
   const MAX_QUANTITY = 20;
-  const SET_DISCOUNT = 500;
   const prepSpeedLabels = { fast: '빨라요', normal: '적당해요', slow: '늦어요' };
   const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
@@ -36,6 +35,7 @@
   }
 
   const lineKey = line => [line.menuId, line.alt ? 1 : 0, line.setDrinkId || '', line.setDrinkAlt ? 1 : 0].join('|');
+  const setDiscount = state => Math.max(0, Number(state.settings.setDiscount) || 0);
   const findMenu = (state, id) => state.menu.find(item => item.id === id);
 
   function getCartItems() {
@@ -55,7 +55,7 @@
     if (!menu) return 0;
     if (!line.setDrinkId) return menu.price;
     const drink = findMenu(state, line.setDrinkId);
-    return drink ? menu.price + drink.price - SET_DISCOUNT : 0;
+    return drink ? menu.price + drink.price - setDiscount(state) : 0;
   }
 
   function cartTotal(state) {
@@ -175,12 +175,12 @@
     if (!toasts.length || !drinks.length) return '';
     const unavailable = !availableToasts.length || !availableDrinks.length;
     const minPrice = unavailable ? 0
-      : Math.min(...availableToasts.map(item => item.price)) + Math.min(...availableDrinks.map(item => item.price)) - SET_DISCOUNT;
+      : Math.min(...availableToasts.map(item => item.price)) + Math.min(...availableDrinks.map(item => item.price)) - setDiscount(state);
     const count = getCartItems().filter(line => line.setDrinkId).reduce((sum, line) => sum + line.quantity, 0);
     return `<li class="menu-row set-row ${unavailable ? 'sold-out' : ''}">
       <div class="menu-row-main">
         <div class="menu-row-title"><h4>토스트 + 음료 세트</h4><span class="menu-dots" aria-hidden="true"></span><strong>${unavailable ? '—' : `${store.formatPrice(minPrice)}~`}</strong></div>
-        <p class="menu-row-note"><span class="discount-badge">${store.formatPrice(SET_DISCOUNT)} 할인</span> 원하는 토스트와 음료를 골라주세요</p>
+        <p class="menu-row-note">${setDiscount(state) ? `<span class="discount-badge">${store.formatPrice(setDiscount(state))} 할인</span> ` : ''}원하는 토스트와 음료를 골라주세요</p>
       </div>
       <div class="menu-row-action">${unavailable
         ? '<span class="sold-out-label">품절</span>'
@@ -271,9 +271,12 @@
     const spec = sheetSpec();
     if (spec) {
       const original = findMenu(state, spec.menuId).price + drink.price;
-      $('#sheet-price').innerHTML = `<s>${store.formatPrice(original)}</s> <strong>${store.formatPrice(original - SET_DISCOUNT)}</strong>`;
+      const discounted = original - setDiscount(state);
+      $('#sheet-price').innerHTML = discounted < original
+        ? `<s>${store.formatPrice(original)}</s> <strong>${store.formatPrice(discounted)}</strong>`
+        : `<strong>${store.formatPrice(original)}</strong>`;
     } else {
-      $('#sheet-price').textContent = `세트 ${store.formatPrice(SET_DISCOUNT)} 할인`;
+      $('#sheet-price').textContent = setDiscount(state) ? `세트 ${store.formatPrice(setDiscount(state))} 할인` : '';
     }
     $('#sheet-add').disabled = !spec;
     $('#sheet-add').textContent = spec ? '세트 담기' : '토스트와 음료를 골라주세요';
