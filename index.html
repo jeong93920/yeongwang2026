@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#3B2A5C">
   <meta name="color-scheme" content="light">
   <title>BASAK WITCH · 주문하기</title>
-  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202610130100">
+  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202610130300">
   <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=202610122330">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
   <link rel="stylesheet" href="./assets/styles.css?v=202610122330">
@@ -16,17 +16,25 @@
     <header class="brand">
       <div class="brand-deco" aria-hidden="true">
         <svg class="deco-moon" viewBox="0 0 40 40" focusable="false"><path d="M16 2a19 19 0 1 0 22 24A15 15 0 1 1 16 2z"/></svg>
-        <span class="deco-star big"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg></span>
-        <span class="deco-star left"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg></span>
-        <span class="deco-star right"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/></svg></span>
+        <span class="deco-star big"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg></span>
+        <span class="deco-star left"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg></span>
+        <span class="deco-star right"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 9.2l7.1-.6z"/></svg></span>
         <i class="deco-dot" style="left:30%;top:14%"></i><i class="deco-dot" style="left:67%;top:28%"></i>
         <i class="deco-dot" style="left:4%;top:68%"></i><i class="deco-dot" style="left:95%;top:60%"></i>
         <i class="deco-dot" style="left:54%;top:8%"></i>
       </div>
-      <svg class="brand-hat" viewBox="0 0 44 32" aria-hidden="true" focusable="false">
-        <path class="hat" d="M13 24 23 3l3 2 7-1-4 3 5 17z"/>
-        <path class="hat-band" d="M14.3 21.3h19l.8 2.7H13.4z"/>
-        <ellipse class="hat" cx="22" cy="26" rx="20" ry="3.6"/>
+      <svg class="brand-witch" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+        <path fill="#9B6BC9" d="M18 38h14v34H20c-6-8-6-24-2-34zM62 38H48v34h12c6-8 6-24 2-34z"/>
+        <circle fill="#8CC65A" cx="40" cy="52" r="18"/>
+        <circle fill="#F29C9C" opacity=".55" cx="30" cy="57" r="3"/>
+        <circle fill="#F29C9C" opacity=".55" cx="50" cy="57" r="3"/>
+        <circle fill="#1E1A22" cx="34" cy="50" r="2.3"/>
+        <circle fill="#1E1A22" cx="46" cy="50" r="2.3"/>
+        <path fill="#6EA840" d="M39 51l6 7-6-1z"/>
+        <path fill="none" stroke="#1E1A22" stroke-width="2" stroke-linecap="round" d="M34 61q6 4 12 0"/>
+        <path class="witch-hat" d="M24 35 38 6l6 3 10-5-6 8 8 23z"/>
+        <path fill="#E0821A" d="M27.4 28h26.2l1.7 5H25.6z"/>
+        <ellipse class="witch-hat" cx="40" cy="36" rx="30" ry="5.5"/>
       </svg>
       <p class="eyebrow">연광제 1번 부스</p>
       <h1 id="booth-name">BASAK WITCH</h1>
@@ -53,7 +61,7 @@
           <div><p class="step-label">1 / 4</p><h2 id="menu-title">메뉴</h2></div>
           <span class="subtle" id="menu-count"></span>
         </div>
-        <div class="menu-board" id="menu-board"></div>
+        <div class="menu-board intro" id="menu-board"></div>
         <div class="sticky-action">
           <button class="primary-button split-button" id="open-cart" type="button" disabled>
             <span><b id="cart-count">0</b>개 담음</span><span id="cart-total">주문 확인</span>
@@ -127,10 +135,18 @@
 
   <div class="ready-alert" id="ready-alert" role="alertdialog" aria-modal="true" aria-labelledby="ready-alert-title" hidden>
     <div class="ready-alert-card">
-      <svg class="ready-alert-hat" viewBox="0 0 44 32" aria-hidden="true" focusable="false">
-        <path class="hat" d="M13 24 23 3l3 2 7-1-4 3 5 17z"/>
-        <path class="hat-band" d="M14.3 21.3h19l.8 2.7H13.4z"/>
-        <ellipse class="hat" cx="22" cy="26" rx="20" ry="3.6"/>
+      <svg class="ready-alert-witch" viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+        <path fill="#9B6BC9" d="M18 38h14v34H20c-6-8-6-24-2-34zM62 38H48v34h12c6-8 6-24 2-34z"/>
+        <circle fill="#8CC65A" cx="40" cy="52" r="18"/>
+        <circle fill="#F29C9C" opacity=".55" cx="30" cy="57" r="3"/>
+        <circle fill="#F29C9C" opacity=".55" cx="50" cy="57" r="3"/>
+        <circle fill="#1E1A22" cx="34" cy="50" r="2.3"/>
+        <circle fill="#1E1A22" cx="46" cy="50" r="2.3"/>
+        <path fill="#6EA840" d="M39 51l6 7-6-1z"/>
+        <path fill="none" stroke="#1E1A22" stroke-width="2" stroke-linecap="round" d="M34 61q6 4 12 0"/>
+        <path class="witch-hat" d="M24 35 38 6l6 3 10-5-6 8 8 23z"/>
+        <path fill="#E0821A" d="M27.4 28h26.2l1.7 5H25.6z"/>
+        <ellipse class="witch-hat" cx="40" cy="36" rx="30" ry="5.5"/>
       </svg>
       <p class="ready-alert-label">주문 준비 완료</p>
       <strong class="ready-alert-number" id="ready-alert-number">#—</strong>

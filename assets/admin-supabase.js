@@ -71,7 +71,6 @@
     $('#metric-payment').textContent = state.orders.filter(order => order.status === 'payment_pending').length;
     $('#metric-cooking').textContent = state.orders.filter(order => order.status === 'cooking').length;
     $('#metric-ready').textContent = state.orders.filter(order => order.status === 'ready').length;
-    $('#metric-done').textContent = state.orders.filter(order => ['picked_up', 'cancelled'].includes(order.status)).length;
   }
 
   function renderMenuTotals(state) {
@@ -91,7 +90,7 @@
 
     const items = [...totals.values()];
     $('#kds-menu-totals').innerHTML = items.length
-      ? items.map(item => `<article class="kds-total-card"><span>${escapeHtml(item.name)}</span><strong>${item.quantity}</strong><small>${item.quantity ? '개 남음' : '대기 없음'}</small></article>`).join('')
+      ? items.map(item => `<article class="kds-total-card ${item.quantity ? 'has-orders' : ''}"><span>${escapeHtml(item.name)}</span><strong>${item.quantity}</strong><small>${item.quantity ? '개 남음' : '대기 없음'}</small></article>`).join('')
       : '<div class="empty-state">등록된 메뉴가 없습니다.</div>';
   }
 
@@ -304,7 +303,6 @@
     $('#metric-payment').textContent = '0';
     $('#metric-cooking').textContent = '0';
     $('#metric-ready').textContent = '0';
-    $('#metric-done').textContent = '0';
     $('#admin-orders').replaceChildren();
     $('#admin-menu-list').replaceChildren();
   }
