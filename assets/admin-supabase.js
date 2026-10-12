@@ -75,12 +75,16 @@
   }
 
   function renderMenuTotals(state) {
-    const totals = new Map(state.menu.map(item => [item.id, { name: item.name, quantity: 0 }]));
+    // 세트 항목("말차 토스트 (세트)")은 단품과 합치고, 청귤에이드·청귤차처럼 대체 메뉴는 따로 셉니다.
+    const baseName = name => String(name || '삭제된 메뉴').replace(/ \(세트\)$/, '');
+    const totals = new Map();
+    state.menu.forEach(item => [item.name, item.altName].filter(Boolean)
+      .forEach(name => totals.set(name, { name, quantity: 0 })));
     state.orders
       .filter(order => order.status === 'cooking')
       .forEach(order => (order.items || []).forEach(item => {
-        const key = item.menuId || `name:${item.name}`;
-        const total = totals.get(key) || { name: item.name || '삭제된 메뉴', quantity: 0 };
+        const key = baseName(item.name);
+        const total = totals.get(key) || { name: key, quantity: 0 };
         total.quantity += Number(item.quantity) || 0;
         totals.set(key, total);
       }));

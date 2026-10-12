@@ -3,44 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#110E0C">
-  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="color-scheme" content="light">
   <title>BASAK WITCH · 주문하기</title>
-  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202609232200">
-  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=202609232200">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202610121200">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=202610121200">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Do+Hyeon&display=swap">
-  <link rel="stylesheet" href="./assets/styles.css?v=202609232200">
+  <link rel="stylesheet" href="./assets/styles.css?v=202610121200">
 </head>
 <body class="customer-body">
   <div class="customer-shell">
-    <!-- 헤더 그림: assets/brand-header.png 로 저장하면 자동으로 표시됩니다.
-         파일이 없으면 아래 자리 표시 상자가 보입니다. -->
     <header class="brand">
-      <img class="brand-art" src="./assets/brand-header.png" alt="BASAK WITCH"
-           onerror="this.hidden=true;document.getElementById('brand-slot').hidden=false">
-      <div class="brand-slot" id="brand-slot" hidden>
-        <strong>헤더 그림 자리</strong>
-        <span>assets/brand-header.png</span>
-      </div>
-      <span id="booth-name" hidden></span>
+      <p class="eyebrow">연광제 2026</p>
+      <h1 id="booth-name">BASAK WITCH</h1>
     </header>
-    <div class="drip" aria-hidden="true"></div>
 
     <div class="customer-wait-summary">
-        <svg class="cauldron" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-          <g class="cauldron-bubbles">
-            <circle cx="12" cy="6.5" r="1.7"/>
-            <circle cx="17.5" cy="3.6" r="1.2"/>
-            <circle cx="21" cy="7" r="1"/>
-          </g>
-          <path class="cauldron-legs" d="M9 25.5 6.5 30M23 25.5 25.5 30"/>
-          <path class="cauldron-pot" d="M3 11c.5 10.5 6 16.5 13 16.5S28.5 21.5 29 11z"/>
-          <ellipse class="cauldron-rim" cx="16" cy="11" rx="13.4" ry="3.4"/>
-          <ellipse class="cauldron-brew" cx="16" cy="11" rx="10.4" ry="2.4"/>
-        </svg>
       <div>
         <small>주방 현황</small>
         <strong id="wait-time">대기 현황 불러오는 중</strong>
@@ -58,10 +36,10 @@
     <main>
       <section class="customer-step active" id="step-menu" aria-labelledby="menu-title">
         <div class="section-heading">
-          <div><p class="step-label">1 / 4</p><h2 id="menu-title">주문할 메뉴를 골라주세요</h2></div>
+          <div><p class="step-label">1 / 4</p><h2 id="menu-title">메뉴</h2></div>
           <span class="subtle" id="menu-count"></span>
         </div>
-        <div class="menu-grid" id="menu-grid"></div>
+        <div class="menu-board" id="menu-board"></div>
         <div class="sticky-action">
           <button class="primary-button split-button" id="open-cart" type="button" disabled>
             <span><b id="cart-count">0</b>개 담음</span><span id="cart-total">주문 확인</span>
@@ -119,10 +97,24 @@
     </main>
   </div>
 
+  <div class="sheet-backdrop" id="option-sheet" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <div class="sheet-head">
+        <h2 id="sheet-title">옵션 선택</h2>
+        <button class="sheet-close" type="button" data-sheet-close aria-label="닫기">×</button>
+      </div>
+      <div class="sheet-body" id="sheet-body"></div>
+      <div class="sheet-foot">
+        <div class="sheet-price" id="sheet-price"></div>
+        <button class="primary-button" id="sheet-add" type="button">담기</button>
+      </div>
+    </section>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
   <script src="./assets/supabase-config.js"></script>
-  <script src="./assets/supabase-store.js?v=202609232200"></script>
-  <script src="./assets/customer-supabase.js?v=202609232200"></script>
+  <script src="./assets/supabase-store.js?v=202610121200"></script>
+  <script src="./assets/customer-supabase.js?v=202610121200"></script>
 </body>
 </html>
