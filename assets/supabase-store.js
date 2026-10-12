@@ -51,7 +51,9 @@
     active: row.active,
     sortOrder: row.sort_order,
     prepSpeed: row.prep_speed || 'normal',
-    stockRemaining: row.stock_remaining == null ? null : Number(row.stock_remaining)
+    stockRemaining: row.stock_remaining == null ? null : Number(row.stock_remaining),
+    category: row.category || null,
+    altName: row.alt_name || null
   });
 
   const mapQueueOrder = row => ({
@@ -137,7 +139,7 @@
   async function loadPublicState() {
     const [settingsResult, menuResult, queueResult] = await Promise.all([
       client.from('booth_settings').select('booth_name,bank_name,account_holder,account_number,transfer_qr_url,is_open').limit(1).maybeSingle(),
-      client.from('booth_menu_items').select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining').order('sort_order'),
+      client.from('booth_menu_items').select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining,category,alt_name').order('sort_order'),
       client.from('booth_public_queue').select('order_id,order_number,status,created_at,updated_at').order('order_number')
     ]);
     const settings = throwIfError(settingsResult);
@@ -160,7 +162,7 @@
   async function loadAdminState() {
     const [settingsResult, menuResult, ordersResult] = await Promise.all([
       client.from('booth_settings').select('booth_name,bank_name,account_holder,account_number,transfer_qr_url,is_open').limit(1).maybeSingle(),
-      client.from('booth_menu_items').select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining').order('sort_order'),
+      client.from('booth_menu_items').select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining,category,alt_name').order('sort_order'),
       client.from('booth_orders').select('id,order_number,payer_name,contact,status,total_amount,created_at,updated_at,booth_order_items(menu_item_id,name_snapshot,price_snapshot,quantity,line_total)').order('order_number')
     ]);
     const settings = throwIfError(settingsResult);
@@ -240,7 +242,9 @@
       .map(item => ({
         menu_id: item.menuId,
         quantity: Math.min(20, Math.max(0, Number(item.quantity) || 0)),
-        no_cucumber: Boolean(item.noCucumber)
+        alt: Boolean(item.alt),
+        set_drink_id: item.setDrinkId || null,
+        set_drink_alt: Boolean(item.setDrinkAlt)
       }))
       .filter(item => item.quantity > 0);
     if (!normalizedItems.length) throw new Error('주문할 메뉴가 없습니다.');
@@ -264,7 +268,9 @@
       items: normalizedItems.map(item => ({
         menuId: item.menu_id,
         quantity: item.quantity,
-        noCucumber: item.no_cucumber
+        alt: item.alt,
+        setDrinkId: item.set_drink_id,
+        setDrinkAlt: item.set_drink_alt
       }))
     };
     state = { ...state, orders: mergeOwnOrder(state.orders, order) };
@@ -284,7 +290,7 @@
     const data = throwIfError(await client.from('booth_menu_items')
       .update({ sold_out: !current.soldOut })
       .eq('id', menuId)
-      .select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining')
+      .select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining,category,alt_name')
       .single());
     const updated = mapMenu(data);
     state = { ...state, menu: state.menu.map(item => item.id === menuId ? updated : item) };
@@ -324,7 +330,7 @@
     const data = throwIfError(await client.from('booth_menu_items')
       .update(values)
       .eq('id', menuId)
-      .select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining')
+      .select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining,category,alt_name')
       .single());
     const updated = mapMenu(data);
     state = { ...state, menu: state.menu.map(item => item.id === menuId ? updated : item) };

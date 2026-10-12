@@ -2,9 +2,11 @@
   'use strict';
 
   const store = window.BoothStore;
+  // key → { menuId, alt, setDrinkId, setDrinkAlt, quantity }
   const cart = new Map();
   let activeOrderId = null;
   let toastTimer;
+  let sheet = null;
 
   const statusLabels = {
     payment_pending: '입금 확인 중', confirmed: '주문 접수', cooking: '조리 중',
@@ -13,6 +15,7 @@
   const steps = ['menu', 'review', 'payment', 'queue'];
   const $ = selector => document.querySelector(selector);
   const MAX_QUANTITY = 20;
+  const SET_DISCOUNT = 500;
   const prepSpeedLabels = { fast: '빨라요', normal: '적당해요', slow: '늦어요' };
   const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
@@ -32,114 +35,331 @@
     toastTimer = setTimeout(() => element.classList.remove('show'), 2200);
   }
 
+  const lineKey = line => [line.menuId, line.alt ? 1 : 0, line.setDrinkId || '', line.setDrinkAlt ? 1 : 0].join('|');
+  const findMenu = (state, id) => state.menu.find(item => item.id === id);
+
   function getCartItems() {
-    return [...cart.entries()]
-      .filter(([, quantity]) => quantity > 0)
-      .map(([menuId, quantity]) => ({ menuId, quantity }));
+    return [...cart.values()].filter(line => line.quantity > 0);
+  }
+
+  function lineName(state, line) {
+    const menu = findMenu(state, line.menuId);
+    if (!menu) return '';
+    if (!line.setDrinkId) return line.alt ? menu.altName : menu.name;
+    const drink = findMenu(state, line.setDrinkId);
+    return drink ? `${menu.name} + ${line.setDrinkAlt ? drink.altName : drink.name}` : '';
+  }
+
+  function linePrice(state, line) {
+    const menu = findMenu(state, line.menuId);
+    if (!menu) return 0;
+    if (!line.setDrinkId) return menu.price;
+    const drink = findMenu(state, line.setDrinkId);
+    return drink ? menu.price + drink.price - SET_DISCOUNT : 0;
   }
 
   function cartTotal(state) {
-    return getCartItems().reduce((total, item) => {
-      const menu = state.menu.find(menuItem => menuItem.id === item.menuId);
-      return total + (menu ? menu.price * item.quantity : 0);
-    }, 0);
+    return getCartItems().reduce((total, line) => total + linePrice(state, line) * line.quantity, 0);
   }
 
   function menuStockRemaining(item) {
     return item && item.stockRemaining != null ? item.stockRemaining : null;
   }
 
-  function stockLimitReached(item) {
+  function isAvailable(item) {
+    return Boolean(item) && item.active && !item.soldOut && menuStockRemaining(item) !== 0;
+  }
+
+  // 세트 음료까지 포함해 이 메뉴가 장바구니에 몇 개 들어 있는지 셉니다.
+  function menuDemand(menuId) {
+    return getCartItems().reduce((sum, line) => sum
+      + (line.menuId === menuId ? line.quantity : 0)
+      + (line.setDrinkId === menuId ? line.quantity : 0), 0);
+  }
+
+  function menuLimit(item) {
     const stock = menuStockRemaining(item);
-    return stock != null && (cart.get(item.id) || 0) >= stock;
+    return stock == null ? MAX_QUANTITY : Math.min(MAX_QUANTITY, stock);
+  }
+
+  function canAddLine(state, line) {
+    for (const id of [line.menuId, line.setDrinkId].filter(Boolean)) {
+      const menu = findMenu(state, id);
+      if (!isAvailable(menu)) return '품절된 메뉴가 있어요.';
+      if (menuDemand(id) >= menuLimit(menu)) {
+        return menuStockRemaining(menu) != null && menuStockRemaining(menu) < MAX_QUANTITY
+          ? `${menu.name}은(는) ${menuStockRemaining(menu)}개까지만 담을 수 있어요.`
+          : `메뉴당 최대 ${MAX_QUANTITY}개까지 담을 수 있어요.`;
+      }
+    }
+    return '';
+  }
+
+  function changeLine(spec, change) {
+    const key = lineKey(spec);
+    const current = cart.get(key);
+    if (change > 0) {
+      const blocked = canAddLine(store.getState(), spec);
+      if (blocked) {
+        toast(blocked);
+        return false;
+      }
+    }
+    const next = Math.max(0, (current ? current.quantity : 0) + change);
+    if (next) cart.set(key, { menuId: spec.menuId, alt: Boolean(spec.alt), setDrinkId: spec.setDrinkId || null, setDrinkAlt: Boolean(spec.setDrinkAlt), quantity: next });
+    else cart.delete(key);
+    return true;
   }
 
   function pruneCart(state) {
-    [...cart.keys()].forEach(menuId => {
-      const menu = state.menu.find(item => item.id === menuId);
-      if (!menu || menu.soldOut || !menu.active) cart.delete(menuId);
+    [...cart.entries()].forEach(([key, line]) => {
+      const ids = [line.menuId, line.setDrinkId].filter(Boolean);
+      if (ids.some(id => {
+        const menu = findMenu(state, id);
+        return !menu || menu.soldOut || !menu.active;
+      })) cart.delete(key);
     });
+  }
+
+  function setMenus(state) {
+    return {
+      toasts: state.menu.filter(item => item.category === 'toast'),
+      drinks: state.menu.filter(item => item.category === 'drink')
+    };
+  }
+
+  function quantityControl(spec, label, disabled) {
+    const quantity = (cart.get(lineKey(spec)) || {}).quantity || 0;
+    const data = `data-line='${escapeHtml(JSON.stringify(spec))}'`;
+    if (!quantity) return `<button class="add-button" type="button" ${data} data-change="1" aria-label="${label} 담기" ${disabled ? 'disabled' : ''}>담기</button>`;
+    return `<div class="quantity-control">
+      <button type="button" ${data} data-change="-1" aria-label="${label} 수량 줄이기">−</button>
+      <span>${quantity}</span>
+      <button type="button" ${data} data-change="1" aria-label="${label} 수량 늘리기" ${disabled ? 'disabled' : ''}>+</button>
+    </div>`;
+  }
+
+  function menuRow(item) {
+    const safeName = escapeHtml(item.name);
+    const unavailable = !isAvailable(item);
+    const stock = menuStockRemaining(item);
+    const notes = [];
+    if (item.altName) notes.push(`${escapeHtml(item.altName)}로 변경 가능`);
+    if (item.description) notes.push(escapeHtml(item.description));
+    if (stock != null && stock > 0) notes.push(`남은 수량 ${stock}개`);
+    notes.push(`소요시간 ${prepSpeedLabels[item.prepSpeed] || prepSpeedLabels.normal}`);
+
+    let control;
+    if (unavailable) {
+      control = '<span class="sold-out-label">품절</span>';
+    } else if (item.altName) {
+      const count = getCartItems().filter(line => line.menuId === item.id && !line.setDrinkId).reduce((sum, line) => sum + line.quantity, 0);
+      control = `<button class="add-button" type="button" data-open-option="${item.id}">${count ? `${count}개 · 추가` : '선택'}</button>`;
+    } else {
+      control = quantityControl({ menuId: item.id }, safeName, false);
+    }
+
+    return `<li class="menu-row ${unavailable ? 'sold-out' : ''}">
+      <div class="menu-row-main">
+        <div class="menu-row-title"><h4>${safeName}</h4><span class="menu-dots" aria-hidden="true"></span><strong>${store.formatPrice(item.price)}</strong></div>
+        <p class="menu-row-note">${notes.join(' · ')}</p>
+      </div>
+      <div class="menu-row-action">${control}</div>
+    </li>`;
+  }
+
+  function setRow(state) {
+    const { toasts, drinks } = setMenus(state);
+    const availableToasts = toasts.filter(isAvailable);
+    const availableDrinks = drinks.filter(isAvailable);
+    if (!toasts.length || !drinks.length) return '';
+    const unavailable = !availableToasts.length || !availableDrinks.length;
+    const minPrice = unavailable ? 0
+      : Math.min(...availableToasts.map(item => item.price)) + Math.min(...availableDrinks.map(item => item.price)) - SET_DISCOUNT;
+    const count = getCartItems().filter(line => line.setDrinkId).reduce((sum, line) => sum + line.quantity, 0);
+    return `<li class="menu-row ${unavailable ? 'sold-out' : ''}">
+      <div class="menu-row-main">
+        <div class="menu-row-title"><h4>토스트 + 음료 세트</h4><span class="menu-dots" aria-hidden="true"></span><strong>${unavailable ? '—' : `${store.formatPrice(minPrice)}~`}</strong></div>
+        <p class="menu-row-note">원하는 토스트와 음료를 골라주세요 · 정가에서 ${store.formatPrice(SET_DISCOUNT)} 할인</p>
+      </div>
+      <div class="menu-row-action">${unavailable
+        ? '<span class="sold-out-label">품절</span>'
+        : `<button class="add-button" type="button" data-open-set>${count ? `${count}개 · 추가` : '선택'}</button>`}</div>
+    </li>`;
   }
 
   function renderMenu(state) {
     pruneCart(state);
-    $('#booth-name').textContent = state.settings.boothName;
+    if (state.settings.boothName) $('#booth-name').textContent = state.settings.boothName;
     const waitingTeams = state.orders.filter(order => ['payment_pending', 'confirmed', 'cooking'].includes(order.status)).length;
     $('#wait-time').textContent = state.settings.isOpen
       ? (waitingTeams ? `지금 주문하면 앞에 ${waitingTeams}팀` : '지금 주문하면 바로 접수돼요')
       : '지금은 주문 준비 중이에요';
-    const available = state.menu.filter(item => !item.soldOut && menuStockRemaining(item) !== 0);
-    $('#menu-count').textContent = `${available.length}개 메뉴`;
+    $('#menu-count').textContent = `${state.menu.filter(isAvailable).length}개 메뉴`;
 
     if (!state.settings.isOpen || !state.menu.length) {
-      $('#menu-grid').innerHTML = `<div class="empty-state customer-empty">${state.settings.isOpen ? '판매 메뉴를 준비하고 있습니다.' : '지금은 주문을 받지 않습니다.'}</div>`;
+      $('#menu-board').innerHTML = `<div class="empty-state customer-empty">${state.settings.isOpen ? '판매 메뉴를 준비하고 있습니다.' : '지금은 주문을 받지 않습니다.'}</div>`;
       return;
     }
 
-    $('#menu-grid').innerHTML = state.menu.map(item => {
-      const quantity = cart.get(item.id) || 0;
-      const safeName = escapeHtml(item.name);
-      const safeDescription = escapeHtml(item.description);
-      const image = item.image ? escapeHtml(item.image) : '';
-      const stockRemaining = menuStockRemaining(item);
-      const unavailable = item.soldOut || stockRemaining === 0;
-      const reachedStockLimit = stockLimitReached(item);
-      const stockText = stockRemaining != null
-        ? `<div class="prep-speed">남은 수량 · ${stockRemaining}개</div>`
-        : '';
-      return `<article class="menu-card ${unavailable ? 'sold-out' : ''}">
-        ${image ? `<img src="${image}" alt="${safeName} 사진">` : '<div class="menu-photo-slot" aria-hidden="true"><span>사진 준비 중</span></div>'}
-        ${unavailable ? '<span class="sold-out-label">품절</span>' : ''}
-        <div class="menu-info"><h3>${safeName}</h3>${safeDescription ? `<p>${safeDescription}</p>` : ''}
-          <div class="prep-speed prep-speed-${item.prepSpeed}">소요시간 · ${prepSpeedLabels[item.prepSpeed] || prepSpeedLabels.normal}</div>
-          ${stockText}
-          <div class="menu-card-footer"><strong>${store.formatPrice(item.price)}</strong>
-            <div class="quantity-control">
-              ${quantity ? `<button class="minus" type="button" data-menu="${item.id}" data-change="-1" aria-label="${safeName} 수량 줄이기">−</button><span>${quantity}</span>` : ''}
-              <button class="${quantity ? '' : 'add'}" type="button" data-menu="${item.id}" data-change="1" aria-label="${safeName} 담기" ${unavailable || reachedStockLimit || quantity >= MAX_QUANTITY ? 'disabled' : ''}>${quantity ? '+' : '담기'}</button>
-            </div>
-          </div></div></article>`;
-    }).join('');
-
-    document.querySelectorAll('[data-menu][data-change]').forEach(button => {
-      button.addEventListener('click', () => {
-        const menuId = button.dataset.menu;
-        const currentState = store.getState();
-        const menu = currentState.menu.find(item => item.id === menuId);
-        const change = Number(button.dataset.change);
-        if (change > 0 && menu && stockLimitReached(menu)) {
-          toast(`${menu.name}은(는) ${menuStockRemaining(menu)}개까지만 담을 수 있어요.`);
-          return;
-        }
-        const previous = cart.get(menuId) || 0;
-        const next = Math.min(MAX_QUANTITY, Math.max(0, previous + change));
-        if (next === MAX_QUANTITY && previous === MAX_QUANTITY) toast(`메뉴당 최대 ${MAX_QUANTITY}개까지 담을 수 있어요.`);
-        if (next) cart.set(menuId, next);
-        else cart.delete(menuId);
-        renderMenu(store.getState());
-        renderCartBar(store.getState());
-      });
-    });
-
+    const { toasts, drinks } = setMenus(state);
+    const others = state.menu.filter(item => !['toast', 'drink'].includes(item.category));
+    const section = (title, rows) => rows ? `<section class="menu-section"><h3>${title}</h3><ul class="menu-list">${rows}</ul></section>` : '';
+    $('#menu-board').innerHTML = [
+      section('토스트', toasts.map(menuRow).join('')),
+      section('음료', drinks.map(menuRow).join('')),
+      section('세트', setRow(state)),
+      section('기타', others.map(menuRow).join(''))
+    ].join('');
+    if (sheet) renderSheet(state);
   }
 
   function renderCartBar(state) {
     const count = getCartItems().reduce((sum, item) => sum + item.quantity, 0);
     $('#cart-count').textContent = count;
-    $('#cart-total').textContent = count ? `${store.formatPrice(cartTotal(state))} · 장바구니 보기` : '메뉴를 담아주세요';
+    $('#cart-total').textContent = count ? `${store.formatPrice(cartTotal(state))} · 주문 확인` : '메뉴를 담아주세요';
     $('#open-cart').disabled = count === 0;
   }
 
+  function radio(group, value, checked, label, price, disabled) {
+    return `<label class="choice ${disabled ? 'disabled' : ''}">
+      <input type="radio" name="${group}" value="${value}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
+      <span>${label}</span>${price ? `<em>${price}</em>` : ''}
+    </label>`;
+  }
+
+  function sheetSpec() {
+    if (!sheet) return null;
+    if (sheet.mode === 'alt') return { menuId: sheet.menuId, alt: sheet.alt };
+    if (!sheet.toastId || !sheet.drinkId) return null;
+    return { menuId: sheet.toastId, setDrinkId: sheet.drinkId, setDrinkAlt: sheet.drinkAlt };
+  }
+
+  function renderSheet(state) {
+    const body = $('#sheet-body');
+    if (sheet.mode === 'alt') {
+      const menu = findMenu(state, sheet.menuId);
+      if (!isAvailable(menu)) return closeSheet();
+      $('#sheet-title').textContent = menu.name;
+      body.innerHTML = `<fieldset class="choice-group"><legend>종류</legend>
+        ${radio('alt', '0', !sheet.alt, escapeHtml(menu.name))}
+        ${radio('alt', '1', sheet.alt, escapeHtml(menu.altName))}
+      </fieldset>`;
+      $('#sheet-price').textContent = store.formatPrice(menu.price);
+      $('#sheet-add').disabled = false;
+      $('#sheet-add').textContent = '담기';
+      return;
+    }
+
+    const { toasts, drinks } = setMenus(state);
+    if (sheet.toastId && !isAvailable(findMenu(state, sheet.toastId))) sheet.toastId = null;
+    if (sheet.drinkId && !isAvailable(findMenu(state, sheet.drinkId))) sheet.drinkId = null;
+    const drink = findMenu(state, sheet.drinkId);
+    if (!drink || !drink.altName) sheet.drinkAlt = false;
+    $('#sheet-title').textContent = '토스트 + 음료 세트';
+    body.innerHTML = `<fieldset class="choice-group"><legend>토스트 선택</legend>
+        ${toasts.map(item => radio('toast', item.id, item.id === sheet.toastId, escapeHtml(item.name), store.formatPrice(item.price), !isAvailable(item))).join('')}
+      </fieldset>
+      <fieldset class="choice-group"><legend>음료 선택</legend>
+        ${drinks.map(item => radio('drink', item.id, item.id === sheet.drinkId, escapeHtml(item.name) + (item.altName ? ` <small>(${escapeHtml(item.altName)} 가능)</small>` : ''), store.formatPrice(item.price), !isAvailable(item))).join('')}
+      </fieldset>
+      ${drink && drink.altName ? `<fieldset class="choice-group"><legend>음료 종류</legend>
+        ${radio('drink-alt', '0', !sheet.drinkAlt, escapeHtml(drink.name))}
+        ${radio('drink-alt', '1', sheet.drinkAlt, escapeHtml(drink.altName))}
+      </fieldset>` : ''}`;
+
+    const spec = sheetSpec();
+    if (spec) {
+      const original = findMenu(state, spec.menuId).price + drink.price;
+      $('#sheet-price').innerHTML = `<s>${store.formatPrice(original)}</s> <strong>${store.formatPrice(original - SET_DISCOUNT)}</strong>`;
+    } else {
+      $('#sheet-price').textContent = `세트 ${store.formatPrice(SET_DISCOUNT)} 할인`;
+    }
+    $('#sheet-add').disabled = !spec;
+    $('#sheet-add').textContent = spec ? '세트 담기' : '토스트와 음료를 골라주세요';
+  }
+
+  function openSheet(next) {
+    sheet = next;
+    renderSheet(store.getState());
+    $('#option-sheet').hidden = false;
+    document.body.classList.add('sheet-open');
+  }
+
+  function closeSheet() {
+    sheet = null;
+    $('#option-sheet').hidden = true;
+    document.body.classList.remove('sheet-open');
+  }
+
   function renderReview(state) {
-    const rows = getCartItems().map(item => {
-      const menu = state.menu.find(menuItem => menuItem.id === item.menuId);
-      if (!menu) return '';
-      return `<div class="summary-row summary-item"><div>${escapeHtml(menu.name)}<small>${store.formatPrice(menu.price)} × ${item.quantity}</small></div><strong>${store.formatPrice(menu.price * item.quantity)}</strong></div>`;
+    const rows = getCartItems().map(line => {
+      const name = lineName(state, line);
+      if (!name) return '';
+      const price = linePrice(state, line);
+      const spec = { menuId: line.menuId, alt: line.alt, setDrinkId: line.setDrinkId, setDrinkAlt: line.setDrinkAlt };
+      const tag = line.setDrinkId ? '<span class="set-tag">세트</span>' : '';
+      return `<div class="summary-row summary-item">
+        <div>${tag}${escapeHtml(name)}<small>${store.formatPrice(price)} × ${line.quantity}</small></div>
+        <div class="summary-line-end">
+          ${quantityControl(spec, escapeHtml(name), false)}
+          <strong>${store.formatPrice(price * line.quantity)}</strong>
+        </div>
+      </div>`;
     }).join('');
     const total = cartTotal(state);
     $('#order-summary').innerHTML = `${rows}<div class="summary-row total"><span>총 금액</span><strong>${store.formatPrice(total)}</strong></div>`;
     $('#review-total').textContent = store.formatPrice(total);
   }
+
+  function rerenderCart() {
+    const state = store.getState();
+    renderMenu(state);
+    renderCartBar(state);
+    if ($('#step-review').classList.contains('active')) {
+      if (!getCartItems().length) showStep('menu');
+      else renderReview(state);
+    }
+  }
+
+  function handleLineClick(event) {
+    const button = event.target.closest('[data-line][data-change]');
+    if (!button) return;
+    changeLine(JSON.parse(button.dataset.line), Number(button.dataset.change));
+    rerenderCart();
+  }
+
+  $('#menu-board').addEventListener('click', event => {
+    const option = event.target.closest('[data-open-option]');
+    if (option) return openSheet({ mode: 'alt', menuId: option.dataset.openOption, alt: false });
+    if (event.target.closest('[data-open-set]')) return openSheet({ mode: 'set', toastId: null, drinkId: null, drinkAlt: false });
+    handleLineClick(event);
+  });
+  $('#order-summary').addEventListener('click', handleLineClick);
+
+  $('#sheet-body').addEventListener('change', event => {
+    const input = event.target;
+    if (input.name === 'alt') sheet.alt = input.value === '1';
+    if (input.name === 'toast') sheet.toastId = input.value;
+    if (input.name === 'drink') sheet.drinkId = input.value;
+    if (input.name === 'drink-alt') sheet.drinkAlt = input.value === '1';
+    renderSheet(store.getState());
+  });
+
+  $('#sheet-add').addEventListener('click', () => {
+    const spec = sheetSpec();
+    if (!spec || !changeLine(spec, 1)) return;
+    toast(`${lineName(store.getState(), spec)} 담았어요.`);
+    closeSheet();
+    rerenderCart();
+  });
+
+  $('#option-sheet').addEventListener('click', event => {
+    if (event.target === event.currentTarget || event.target.closest('[data-sheet-close]')) closeSheet();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && sheet) closeSheet();
+  });
 
   function findActiveOrder(state) {
     return state.orders.find(order => order.id === activeOrderId);
