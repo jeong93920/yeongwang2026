@@ -517,6 +517,38 @@ a { color: inherit; }
 .queue-notice { margin-top: 12px; color: var(--muted); font-size: 13px; }
 .new-order-button { display: block; margin: 10px auto 0; }
 
+/* 수령 알림 */
+.ready-alert {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(30, 22, 48, .72);
+}
+.ready-alert-card {
+  width: min(100%, 360px);
+  padding: 28px 22px 22px;
+  border-top: 6px solid var(--highlight);
+  border-radius: 18px;
+  background: var(--surface);
+  text-align: center;
+  animation: ready-pop .35s ease-out;
+}
+.ready-alert-hat { display: block; width: 56px; height: 41px; margin: 0 auto 8px; animation: ready-wiggle 1.2s ease-in-out infinite; }
+.ready-alert-hat .hat { fill: var(--accent); }
+.ready-alert-hat .hat-band { fill: var(--highlight); }
+.ready-alert-label { color: var(--ok); font-size: 14px; font-weight: 800; }
+.ready-alert-number { display: block; margin: 2px 0 6px; color: var(--accent); font-size: 56px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.ready-alert h2 { font-size: 22px; font-weight: 800; }
+.ready-alert-help { margin: 6px 0 18px; color: var(--muted); font-size: 14px; }
+@keyframes ready-pop { from { transform: scale(.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes ready-wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ready-alert-card, .ready-alert-hat { animation: none; }
+}
+
 /* 알림 */
 .toast {
   position: fixed;

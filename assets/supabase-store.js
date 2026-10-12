@@ -408,6 +408,6 @@
   window.BoothStore = {
     getState, ready, subscribe, createOrder, updateOrderStatus, toggleSoldOut, updateMenuItem, updateSetDiscount,
     calculateOrderTotal, setCurrentOrderId, getCurrentOrderId, clearCurrentOrder,
-    getAuthState, signInWithPassword, signInWithOtp, signOut, formatPrice
+    getAuthState, signInWithPassword, signInWithOtp, signOut, formatPrice, refresh
   };
 })();

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#3B2A5C">
   <meta name="color-scheme" content="light">
   <title>BASAK WITCH · 주문하기</title>
-  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202610122330">
+  <link rel="icon" type="image/png" href="./assets/favicon.png?v=202610130100">
   <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=202610122330">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
   <link rel="stylesheet" href="./assets/styles.css?v=202610122330">
@@ -123,6 +123,21 @@
         <button class="primary-button" id="sheet-add" type="button">담기</button>
       </div>
     </section>
+  </div>
+
+  <div class="ready-alert" id="ready-alert" role="alertdialog" aria-modal="true" aria-labelledby="ready-alert-title" hidden>
+    <div class="ready-alert-card">
+      <svg class="ready-alert-hat" viewBox="0 0 44 32" aria-hidden="true" focusable="false">
+        <path class="hat" d="M13 24 23 3l3 2 7-1-4 3 5 17z"/>
+        <path class="hat-band" d="M14.3 21.3h19l.8 2.7H13.4z"/>
+        <ellipse class="hat" cx="22" cy="26" rx="20" ry="3.6"/>
+      </svg>
+      <p class="ready-alert-label">주문 준비 완료</p>
+      <strong class="ready-alert-number" id="ready-alert-number">#—</strong>
+      <h2 id="ready-alert-title">부스에서 받아가세요!</h2>
+      <p class="ready-alert-help">이 화면의 주문번호를 직원에게 보여주세요.</p>
+      <button class="primary-button" id="ready-alert-close" type="button">확인했어요</button>
+    </div>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
