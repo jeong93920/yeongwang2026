@@ -9,6 +9,8 @@ Supabase에 연결된 정적 웹앱으로, GitHub Pages에 배포합니다.
 글꼴은 Pretendard 하나만 쓰고, 색은 `assets/styles.css` 맨 위 `:root` 토큰에서 바꿀 수 있습니다.
 
 - 고객 메뉴는 `토스트` / `음료` / `세트` 구역으로 나뉜 목록입니다.
+- 포인트 색은 보라(`--accent`)와 오렌지(`--highlight`) 두 가지, 제목 위에 작은 마녀 모자를 둡니다.
+- 파비콘(브라우저 탭 아이콘)은 마녀 얼굴이며 `python3 assets/generate-favicon.py`로 다시 만들 수 있습니다.
 - 관리자 주방 화면은 주문 카드 왼쪽 띠 색으로 상태를 구분합니다.
   입금 대기 회색 / 접수 파랑 / 조리 중 노랑 / 수령 가능 초록 / 취소 빨강
 
@@ -78,6 +80,8 @@ python3 -m http.server 4173 --bind 127.0.0.1 --directory /Users/jeong/연광제/
 - `supabase/migrations/20261012120000_toast_menu_and_set.sql`을 원격에 적용해야 합니다.
   **프런트엔드보다 먼저 적용하세요.** 새 화면은 `category`, `alt_name` 컬럼을 읽기 때문에
   마이그레이션 전에 배포하면 메뉴를 불러오지 못합니다.
+- 입금 계좌는 **예시 값**(토스뱅크 · 예시 · 100000000000)입니다. 실제 은행·계좌번호·예금주로 바꿔야
+  손님이 송금할 수 있습니다. 토스 버튼 링크는 이 계좌 정보로 자동 생성됩니다.
 - GitHub Pages 배포 후 해당 `/admin/` 주소를 Supabase Auth Redirect URL에 추가해야 합니다.
 
 자세한 스키마·마이그레이션 상태는 `supabase/README.md`에 있습니다.

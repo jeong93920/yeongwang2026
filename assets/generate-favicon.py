@@ -1,10 +1,13 @@
-"""BASAK WITCH 파비콘 생성 — 메뉴판 팔레트의 잭오랜턴. 외부 라이브러리 없이 PNG를 직접 씁니다."""
+"""BASAK WITCH 파비콘 생성 — 고깔모자를 쓴 마녀 얼굴. 외부 라이브러리 없이 PNG를 직접 씁니다."""
 import os, struct, zlib
 
-BG = (0x14, 0x11, 0x0F)       # 차콜 나이트
-ORANGE = (0xF2, 0x91, 0x1E)   # 펌킨 오렌지
-DEEP = (0xC9, 0x6F, 0x0C)     # 능선 그림자
-GREEN = (0x4F, 0x8C, 0x25)    # 꼭지
+BG = (0x3B, 0x2A, 0x5C)       # 밤하늘 보라
+HAT = (0x1E, 0x1A, 0x22)      # 모자
+BAND = (0xF2, 0x91, 0x1E)     # 모자 띠 (오렌지)
+FACE = (0x8C, 0xC6, 0x5A)     # 마녀 얼굴
+SHADE = (0x6E, 0xA8, 0x40)    # 코
+HAIR = (0x7A, 0x3E, 0x9D)     # 머리카락
+EYE = (0x1E, 0x1A, 0x22)
 
 SIZE = 512
 SS = 3                         # 슈퍼샘플링 배율
@@ -26,62 +29,41 @@ def triangle(x, y, a, b, c):
     return not (neg and pos)
 
 
-BODY = [
-    (256, 300, 122, 156),
-    (196, 300, 96, 149),
-    (316, 300, 96, 149),
-    (147, 300, 69, 129),
-    (365, 300, 69, 129),
-]
-RIDGES = [(196, 300, 96, 149), (316, 300, 96, 149)]
-
-EYE_L = ((168, 248), (234, 248), (201, 318))
-EYE_R = ((278, 248), (344, 248), (311, 318))
-NOSE = ((240, 352), (272, 352), (256, 312))
-
-MOUTH_X0, MOUTH_X1 = 158, 354
-TOP_TEETH = (190, 256, 322)
-BOTTOM_TEETH = (223, 289)
+# 모자: 넓은 챙 + 끝이 오른쪽으로 꺾인 고깔
+CONE = ((150, 262), (362, 262), (282, 74))
+TIP = ((262, 120), (300, 86), (392, 112))
+BAND_Y = (214, 250)
 
 
-def mouth_top(x):
-    return 386.0 - 0.0035 * (x - 256) ** 2
-
-
-def in_mouth(x, y):
-    if not (MOUTH_X0 <= x <= MOUTH_X1):
-        return False
-    top = mouth_top(x)
-    if not (top <= y <= top + 46):
-        return False
-    for c in TOP_TEETH:                       # 위쪽 이
-        if triangle(x, y, (c - 25, top - 1), (c + 25, top - 1), (c, top + 31)):
-            return False
-    for c in BOTTOM_TEETH:                    # 아래쪽 이
-        bot = top + 47
-        if triangle(x, y, (c - 23, bot), (c + 23, bot), (c, top + 16)):
-            return False
-    return True
+def in_cone(x, y):
+    return triangle(x, y, *CONE)
 
 
 def sample(x, y):
     """SIZE 좌표계의 한 점 색을 돌려줍니다."""
-    # 꼭지와 잎
-    if ellipse(x, y, 256, 150, 20, 46) or ellipse(x, y, 300, 158, 44, 15):
-        return GREEN
-    body = any(ellipse(x, y, cx, cy, rx, ry) for cx, cy, rx, ry in BODY)
-    if not body:
-        return BG
-    if triangle(x, y, *EYE_L) or triangle(x, y, *EYE_R) or triangle(x, y, *NOSE):
-        return BG
-    if in_mouth(x, y):
-        return BG
-    # 호박 능선: 큰 곡면 두 개의 테두리만 살짝 어둡게
-    for cx, cy, rx, ry in RIDGES:
-        d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2
-        if 0.955 <= d <= 1.0:
-            return DEEP
-    return ORANGE
+    # 챙
+    if ellipse(x, y, 256, 270, 212, 34):
+        return HAT
+    # 고깔과 꺾인 끝
+    if in_cone(x, y):
+        return BAND if BAND_Y[0] <= y <= BAND_Y[1] else HAT
+    if triangle(x, y, *TIP) or ellipse(x, y, 392, 112, 14, 14):
+        return HAT
+    # 얼굴 (챙 아래)
+    face = ellipse(x, y, 256, 360, 118, 120) and y > 280
+    hair = (ellipse(x, y, 140, 360, 50, 132) or ellipse(x, y, 372, 360, 50, 132)) and 280 < y < 470
+    if face:
+        if ellipse(x, y, 212, 345, 16, 20) or ellipse(x, y, 300, 345, 16, 20):
+            return EYE
+        if triangle(x, y, (248, 362), (268, 362), (288, 410)):
+            return SHADE
+        # 씩 웃는 입
+        if ellipse(x, y, 256, 420, 52, 22) and not ellipse(x, y, 256, 410, 52, 22) and y > 418:
+            return EYE
+        return FACE
+    if hair:
+        return HAIR
+    return BG
 
 
 def render():
