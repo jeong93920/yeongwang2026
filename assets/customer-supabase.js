@@ -461,8 +461,101 @@
     }).join('');
     $('#queue-notice').textContent = ready
       ? '주문이 준비됐습니다. 주문번호 화면을 보여주고 받아가세요.'
-      : '상태는 자동으로 갱신됩니다. 주문 변경이나 취소는 부스 직원에게 주문번호를 보여주세요.';
+      : '준비되면 소리·진동으로 알려드려요. 이 화면을 켜 두세요. 주문 변경이나 취소는 부스 직원에게 주문번호를 보여주세요.';
   }
+
+  // ---- 수령 알림: 내 주문이 '수령 가능'으로 바뀌면 소리·진동·화면 안내로 알립니다. ----
+  const BASE_TITLE = document.title;
+  const READY_TITLE = '🔔 수령해 주세요!';
+  const notifiedReady = new Set();
+  let lastStatus = null;
+  let audioContext = null;
+  let titleTimer = null;
+  let pollTimer = null;
+
+  // 브라우저는 사용자가 화면을 누른 뒤에만 소리를 허용하므로, 첫 터치 때 오디오를 미리 열어 둡니다.
+  function unlockAudio() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    try {
+      if (!audioContext) audioContext = new AudioContextClass();
+      if (audioContext.state === 'suspended') audioContext.resume();
+    } catch (_) { audioContext = null; }
+  }
+  ['pointerdown', 'touchstart', 'keydown'].forEach(type => document.addEventListener(type, unlockAudio, { passive: true }));
+
+  function playChime() {
+    if (!audioContext) return;
+    try {
+      const start = audioContext.currentTime + 0.05;
+      [[880, 0], [1175, 0.18], [1568, 0.36], [880, 0.9], [1175, 1.08], [1568, 1.26]].forEach(([frequency, offset]) => {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(0.0001, start + offset);
+        gain.gain.exponentialRampToValueAtTime(0.35, start + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.32);
+        oscillator.connect(gain).connect(audioContext.destination);
+        oscillator.start(start + offset);
+        oscillator.stop(start + offset + 0.35);
+      });
+    } catch (_) { /* 소리를 못 내도 화면 안내는 계속 보여 줍니다. */ }
+  }
+
+  function startTitleBlink() {
+    clearInterval(titleTimer);
+    let on = false;
+    titleTimer = setInterval(() => {
+      on = !on;
+      document.title = on ? READY_TITLE : BASE_TITLE;
+    }, 1000);
+    document.title = READY_TITLE;
+  }
+
+  function stopReadyAlert() {
+    clearInterval(titleTimer);
+    titleTimer = null;
+    document.title = BASE_TITLE;
+    $('#ready-alert').hidden = true;
+    if (navigator.vibrate) navigator.vibrate(0);
+  }
+
+  function showReadyAlert(order) {
+    $('#ready-alert-number').textContent = `#${order.orderNumber}`;
+    $('#ready-alert').hidden = false;
+    if (navigator.vibrate) navigator.vibrate([400, 200, 400, 200, 800]);
+    playChime();
+    startTitleBlink();
+  }
+
+  function checkReady(state) {
+    const order = activeOrderId ? findActiveOrder(state) : null;
+    const status = order ? order.status : null;
+    if (order && status === 'ready' && lastStatus !== 'ready' && !notifiedReady.has(order.id)) {
+      notifiedReady.add(order.id);
+      showReadyAlert(order);
+    }
+    if (status !== 'ready' && titleTimer) stopReadyAlert();
+    lastStatus = status;
+
+    // 실시간 연결이 끊겨도 놓치지 않도록, 기다리는 주문이 있으면 20초마다 다시 확인합니다.
+    const waiting = order && ['payment_pending', 'confirmed', 'cooking'].includes(status);
+    if (waiting && !pollTimer) pollTimer = setInterval(() => store.refresh().catch(() => {}), 20000);
+    if (!waiting && pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
+    }
+  }
+
+  $('#ready-alert-close').addEventListener('click', () => {
+    stopReadyAlert();
+    const order = findActiveOrder(store.getState());
+    if (order) {
+      renderQueue(store.getState());
+      showStep('queue');
+    }
+  });
 
   $('#open-cart').addEventListener('click', () => {
     renderReview(store.getState());
@@ -549,6 +642,7 @@
     renderMenu(state);
     renderCartBar(state);
     if (activeOrderId && $('#step-queue').classList.contains('active')) renderQueue(state);
+    checkReady(state);
   });
 
   store.ready().then(() => {
@@ -560,6 +654,7 @@
       renderQueue(initialState);
       showStep('queue');
     }
+    checkReady(initialState);
   }).catch(error => {
     renderMenu(store.getState());
     renderCartBar(store.getState());
