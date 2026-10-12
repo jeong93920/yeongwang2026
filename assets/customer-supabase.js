@@ -7,6 +7,7 @@
   let activeOrderId = null;
   let toastTimer;
   let sheet = null;
+  let introScheduled = false;
 
   const statusLabels = {
     payment_pending: '입금 확인 중', confirmed: '주문 접수', cooking: '조리 중',
@@ -211,11 +212,25 @@
       section('세트', setRow(state)),
       section('기타', others.map(menuRow).join(''))
     ].join('');
+    // 첫 화면에서만 메뉴 카드가 차례로 올라오고, 이후 실시간 갱신 때는 다시 움직이지 않게 합니다.
+    if (!introScheduled) {
+      introScheduled = true;
+      setTimeout(() => $('#menu-board').classList.remove('intro'), 1000);
+    }
     if (sheet) renderSheet(state);
   }
 
+  let lastCartCount = 0;
+
   function renderCartBar(state) {
     const count = getCartItems().reduce((sum, item) => sum + item.quantity, 0);
+    if (count > lastCartCount) {
+      const button = $('#open-cart');
+      button.classList.remove('bump');
+      void button.offsetWidth;
+      button.classList.add('bump');
+    }
+    lastCartCount = count;
     $('#cart-count').textContent = count;
     $('#cart-total').textContent = count ? `${store.formatPrice(cartTotal(state))} · 주문 확인` : '메뉴를 담아주세요';
     $('#open-cart').disabled = count === 0;
