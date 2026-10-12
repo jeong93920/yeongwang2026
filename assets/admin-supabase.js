@@ -269,12 +269,32 @@
     bindMenuActions();
   }
 
+  function renderSetDiscount(state) {
+    const input = $('#set-discount');
+    if (document.activeElement !== input) input.value = state.settings.setDiscount;
+  }
+
   function render(state) {
     renderMenuTotals(state);
     renderMetrics(state);
     renderOrders(state);
     renderMenu(state);
+    renderSetDiscount(state);
   }
+
+  $('#save-set-discount').addEventListener('click', async event => {
+    const button = event.currentTarget;
+    const raw = $('#set-discount').value.trim();
+    button.disabled = true;
+    try {
+      const settings = await store.updateSetDiscount(raw === '' ? NaN : Number(raw));
+      toast(`세트 할인 · ${store.formatPrice(settings.setDiscount)} 저장`);
+    } catch (error) {
+      toast(error.message);
+    } finally {
+      button.disabled = false;
+    }
+  });
 
   function clearAdminView() {
     $('#kds-menu-totals').replaceChildren();

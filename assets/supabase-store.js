@@ -26,7 +26,7 @@
   let state = {
     settings: {
       boothName: 'BASAK WITCH', bankName: '', accountHolder: '', accountNumber: '',
-      transferQrUrl: null, isOpen: true
+      transferQrUrl: null, isOpen: true, setDiscount: 500
     },
     menu: [],
     orders: []
@@ -38,7 +38,8 @@
     accountHolder: row.account_holder,
     accountNumber: row.account_number,
     transferQrUrl: row.transfer_qr_url,
-    isOpen: row.is_open
+    isOpen: row.is_open,
+    setDiscount: row.set_discount == null ? 0 : Number(row.set_discount)
   }) : state.settings;
 
   const mapMenu = row => ({
@@ -138,7 +139,7 @@
 
   async function loadPublicState() {
     const [settingsResult, menuResult, queueResult] = await Promise.all([
-      client.from('booth_settings').select('booth_name,bank_name,account_holder,account_number,transfer_qr_url,is_open').limit(1).maybeSingle(),
+      client.from('booth_settings').select('booth_name,bank_name,account_holder,account_number,transfer_qr_url,is_open,set_discount').limit(1).maybeSingle(),
       client.from('booth_menu_items').select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining,category,alt_name').order('sort_order'),
       client.from('booth_public_queue').select('order_id,order_number,status,created_at,updated_at').order('order_number')
     ]);
@@ -161,7 +162,7 @@
 
   async function loadAdminState() {
     const [settingsResult, menuResult, ordersResult] = await Promise.all([
-      client.from('booth_settings').select('booth_name,bank_name,account_holder,account_number,transfer_qr_url,is_open').limit(1).maybeSingle(),
+      client.from('booth_settings').select('booth_name,bank_name,account_holder,account_number,transfer_qr_url,is_open,set_discount').limit(1).maybeSingle(),
       client.from('booth_menu_items').select('id,name,description,price,image_url,sold_out,active,sort_order,prep_speed,stock_remaining,category,alt_name').order('sort_order'),
       client.from('booth_orders').select('id,order_number,payer_name,contact,status,total_amount,created_at,updated_at,booth_order_items(menu_item_id,name_snapshot,price_snapshot,quantity,line_total)').order('order_number')
     ]);
@@ -338,6 +339,19 @@
     return updated;
   }
 
+  async function updateSetDiscount(value) {
+    const discount = Number(value);
+    if (!Number.isInteger(discount) || discount < 0 || discount > 100000) throw new Error('세트 할인은 0 이상의 원 단위 숫자로 입력해 주세요.');
+    const data = throwIfError(await client.from('booth_settings')
+      .update({ set_discount: discount })
+      .eq('id', true)
+      .select('booth_name,bank_name,account_holder,account_number,transfer_qr_url,is_open,set_discount')
+      .single());
+    state = { ...state, settings: mapSettings(data) };
+    notify();
+    return state.settings;
+  }
+
   async function signInWithPassword(email, password) {
     if (!password) throw new Error('비밀번호를 입력해 주세요.');
     const result = await client.auth.signInWithPassword({ email, password });
@@ -392,7 +406,7 @@
   function formatPrice(value) { return `${Number(value || 0).toLocaleString('ko-KR')}원`; }
 
   window.BoothStore = {
-    getState, ready, subscribe, createOrder, updateOrderStatus, toggleSoldOut, updateMenuItem,
+    getState, ready, subscribe, createOrder, updateOrderStatus, toggleSoldOut, updateMenuItem, updateSetDiscount,
     calculateOrderTotal, setCurrentOrderId, getCurrentOrderId, clearCurrentOrder,
     getAuthState, signInWithPassword, signInWithOtp, signOut, formatPrice
   };
