@@ -168,11 +168,14 @@ a { color: inherit; }
   border-radius: 0 0 50% 50% / 0 0 32px 32px;
   overflow: hidden;
 }
-.brand-deco { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.brand-deco .moon { fill: #F7B567; }
-.brand-deco .spark { fill: #FFFFFF; opacity: .85; }
-.brand-deco .spark.small { fill: #F7B567; opacity: .9; }
-.brand-deco .dot { fill: #FFFFFF; opacity: .6; }
+.brand-deco { position: absolute; inset: 0; pointer-events: none; }
+.deco-star svg { display: block; width: 100%; height: 100%; }
+.deco-moon { position: absolute; top: 22px; left: 9%; width: 40px; height: 40px; fill: #F7B567; }
+.deco-star { position: absolute; display: block; }
+.deco-star.big { top: 26px; right: 10%; width: 24px; height: 24px; fill: #FFFFFF; opacity: .85; }
+.deco-star.left { top: 42%; left: 7%; width: 14px; height: 14px; fill: #F7B567; }
+.deco-star.right { top: 36%; right: 7%; width: 14px; height: 14px; fill: #F7B567; }
+.deco-dot { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #FFFFFF; opacity: .55; }
 .brand > :not(.brand-deco) { position: relative; }
 .brand-hat { display: block; width: 52px; height: 38px; margin: 0 auto 10px; }
 .brand-hat .hat { fill: #FFF9F0; }
