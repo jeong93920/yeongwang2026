@@ -3,13 +3,15 @@
    ========================================================================== */
 
 :root {
-  --bg: #F4F1EC;
+  --bg: #F6EFE3;
   --surface: #FFFFFF;
+  --paper: #FFF9F0;
+  --lavender: #EEE8F6;
   --text: #1F1F1F;
   --muted: #6B6B6B;
   --faint: #A3A3A3;
-  --line: #E4E2DD;
-  --line-strong: #C9C6BF;
+  --line: #EADFCE;
+  --line-strong: #CDBFA8;
   --accent: #3B2A5C;
   --accent-text: #FFFFFF;
   --accent-soft: #F1EDF7;
@@ -23,6 +25,7 @@
   --info-soft: #E6EEF8;
   --danger: #B3261E;
   --danger-soft: #FBE9E7;
+  --gutter: 20px;
   --radius: 10px;
   --radius-sm: 6px;
 }
@@ -33,7 +36,7 @@
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  background: var(--bg);
+  background: #2E2147;
   color: var(--text);
   font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   font-size: 15px;
@@ -145,20 +148,24 @@ a { color: inherit; }
   width: min(100%, 620px);
   min-height: 100vh;
   margin: 0 auto;
-  padding: 24px 20px 0;
-  background: var(--surface);
-  box-shadow: 0 0 0 1px var(--line), 0 8px 30px rgba(59, 42, 92, .06);
+  padding: 0 var(--gutter);
+  background: var(--paper);
 }
 
 .brand {
-  padding: 8px 0 18px;
-  border-bottom: 4px double var(--accent);
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 26px var(--gutter) 24px;
+  border-bottom: 4px solid var(--highlight);
+  background: var(--accent);
+  color: #FFFFFF;
   text-align: center;
 }
-.brand-hat { display: block; width: 44px; height: 32px; margin: 0 auto 6px; }
-.brand .eyebrow { color: var(--highlight); letter-spacing: .12em; }
-.brand h1 { margin-top: 2px; color: var(--accent); font-size: 30px; font-weight: 800; letter-spacing: .06em; }
-.brand-tagline { margin-top: 4px; color: var(--muted); font-size: 13px; }
+.brand-hat { display: block; width: 48px; height: 35px; margin: 0 auto 8px; }
+.brand-hat .hat { fill: #FFF9F0; }
+.brand-hat .hat-band { fill: var(--highlight); }
+.brand .eyebrow { color: #F7B567; letter-spacing: .12em; }
+.brand h1 { margin-top: 2px; color: #FFFFFF; font-size: 30px; font-weight: 800; letter-spacing: .06em; }
+.brand-tagline { margin-top: 4px; color: #D9CFEA; font-size: 13px; }
 
 .customer-wait-summary {
   display: flex;
@@ -167,10 +174,11 @@ a { color: inherit; }
   gap: 12px;
   margin-top: 16px;
   padding: 12px 14px;
-  border: 1px solid var(--line);
+  border: 1px solid #DCD1EC;
   border-radius: var(--radius);
+  background: var(--lavender);
 }
-.customer-wait-summary small { display: block; color: var(--muted); font-size: 12px; }
+.customer-wait-summary small { display: block; color: var(--accent); font-size: 12px; }
 .customer-wait-summary strong { font-size: 15px; }
 
 .step-progress {
@@ -193,13 +201,20 @@ a { color: inherit; }
   gap: 12px;
   margin-bottom: 16px;
 }
-.section-heading h2 { font-size: 22px; font-weight: 800; }
-.step-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+.section-heading h2 { color: var(--accent); font-size: 22px; font-weight: 800; }
+.step-label { color: var(--highlight); font-size: 12px; font-weight: 600; }
 .section-description { margin: -6px 0 16px; color: var(--muted); font-size: 14px; }
 .back-button { margin-bottom: 8px; text-decoration: none; }
 
 /* 메뉴판 */
-.menu-section + .menu-section { margin-top: 28px; }
+.menu-section + .menu-section { margin-top: 14px; }
+.menu-list .menu-row:last-child { border-bottom: 0; }
+.menu-section {
+  padding: 16px 16px 4px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--line);
+}
 .menu-section h3 {
   display: flex;
   align-items: center;
@@ -219,7 +234,7 @@ a { color: inherit; }
   transform: rotate(45deg);
 }
 .menu-row.set-row {
-  margin-top: 10px;
+  margin: 10px 0 12px;
   padding: 14px;
   border: 1px solid #F3D3AE;
   border-radius: var(--radius);
@@ -242,12 +257,12 @@ a { color: inherit; }
   align-items: center;
   gap: 14px;
   padding: 14px 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px dashed var(--line-strong);
 }
 .menu-row-main { flex: 1; min-width: 0; }
 .menu-row-title { display: flex; align-items: baseline; gap: 8px; }
 .menu-row-title h4 { font-size: 16px; font-weight: 700; }
-.menu-row-title strong { flex: none; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.menu-row-title strong { flex: none; color: var(--highlight); font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .menu-dots { flex: 1; min-width: 12px; border-bottom: 1px dotted var(--line-strong); transform: translateY(-4px); }
 .menu-row-note { margin-top: 2px; color: var(--muted); font-size: 12px; }
 .menu-row-action { flex: none; display: flex; justify-content: flex-end; min-width: 92px; }
@@ -260,8 +275,8 @@ a { color: inherit; }
   padding: 6px 14px;
   border: 1px solid var(--accent);
   border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--accent);
+  background: var(--accent);
+  color: #FFFFFF;
   font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
@@ -278,8 +293,10 @@ a { color: inherit; }
 .quantity-control {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--line-strong);
+  border: 1px solid #DCD1EC;
   border-radius: var(--radius-sm);
+  background: var(--lavender);
+  color: var(--accent);
 }
 .quantity-control button {
   width: 34px;
@@ -303,11 +320,11 @@ a { color: inherit; }
   width: min(100%, 620px);
   padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--paper);
 }
 
 /* 주문 확인 */
-.order-summary { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.order-summary { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
 .summary-row {
   display: flex;
   justify-content: space-between;
@@ -321,7 +338,7 @@ a { color: inherit; }
 .summary-line-end { display: flex; align-items: center; gap: 12px; flex: none; }
 .summary-line-end strong { min-width: 64px; text-align: right; font-variant-numeric: tabular-nums; }
 .summary-line-end .add-button { min-width: 0; }
-.summary-row.total { background: var(--bg); font-weight: 800; }
+.summary-row.total { background: var(--lavender); color: var(--accent); font-weight: 800; }
 .summary-row.total strong { font-size: 18px; }
 .set-tag {
   display: inline-block;
@@ -402,9 +419,10 @@ a { color: inherit; }
   margin-bottom: 14px;
   padding: 12px 16px;
   border-radius: var(--radius);
-  background: var(--bg);
+  background: var(--accent);
+  color: #FFFFFF;
 }
-.order-number-strip span { color: var(--muted); font-size: 13px; }
+.order-number-strip span { color: #D9CFEA; font-size: 13px; }
 .order-number-strip strong { font-size: 22px; font-weight: 800; }
 .account-card {
   display: grid;
@@ -412,9 +430,10 @@ a { color: inherit; }
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  background: var(--surface);
   text-align: center;
 }
-.payment-amount { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.payment-amount { color: var(--highlight); font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .account-card #bank-name { color: var(--muted); font-size: 14px; }
 .account-card #account-number { font-size: 20px; letter-spacing: .02em; }
 .payment-divider {
@@ -435,11 +454,12 @@ a { color: inherit; }
   align-items: center;
   gap: 16px;
   padding: 18px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid #DCD1EC;
   border-radius: var(--radius);
+  background: var(--lavender);
 }
 .my-order-card small { display: block; color: var(--muted); font-size: 12px; }
-.my-order-number { font-size: 36px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.my-order-number { color: var(--accent); font-size: 36px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .my-order-status { text-align: right; }
 .my-order-status strong { display: block; font-size: 16px; }
 .my-order-card.ready { border-color: var(--ok); background: var(--ok-soft); }
@@ -451,9 +471,9 @@ a { color: inherit; }
   align-items: baseline;
   margin: 24px 0 10px;
 }
-.queue-heading h3 { font-size: 16px; font-weight: 800; }
+.queue-heading h3 { color: var(--accent); font-size: 16px; font-weight: 800; }
 .queue-heading span { color: var(--muted); font-size: 12px; }
-.public-queue { border: 1px solid var(--line); border-radius: var(--radius); }
+.public-queue { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .queue-row {
   display: grid;
   grid-template-columns: 84px 1fr;
@@ -462,13 +482,16 @@ a { color: inherit; }
 }
 .queue-row + .queue-row { border-top: 1px solid var(--line); }
 .queue-row > strong { padding-top: 4px; font-size: 13px; }
+.queue-row.ready { background: var(--ok-soft); }
 .queue-row.ready > strong { color: var(--ok); }
+.queue-row.cooking { background: var(--warn-soft); }
 .queue-row.cooking > strong { color: var(--warn); }
 .queue-numbers { display: flex; flex-wrap: wrap; gap: 6px; }
 .queue-number {
   padding: 3px 10px;
   border: 1px solid var(--line);
   border-radius: 999px;
+  background: var(--surface);
   font-size: 14px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -487,7 +510,7 @@ a { color: inherit; }
   max-width: min(90vw, 460px);
   padding: 10px 16px;
   border-radius: var(--radius);
-  background: var(--text);
+  background: var(--accent);
   color: #FFFFFF;
   font-size: 14px;
   font-weight: 600;
@@ -502,7 +525,7 @@ a { color: inherit; }
    관리자 — 로그인
    -------------------------------------------------------------------------- */
 
-.admin-body { min-height: 100vh; }
+.admin-body { min-height: 100vh; background: var(--bg); }
 .admin-login-wrap { display: grid; place-items: center; min-height: 100vh; padding: 20px; }
 .admin-login-card {
   display: grid;
@@ -513,7 +536,7 @@ a { color: inherit; }
   border-radius: var(--radius);
   background: var(--surface);
 }
-.admin-login-card h1 { font-size: 24px; font-weight: 800; }
+.admin-login-card h1 { color: var(--accent); font-size: 24px; font-weight: 800; }
 .admin-login-card #login-status { color: var(--muted); font-size: 14px; }
 .admin-login-email { padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bg); font-size: 14px; font-weight: 600; }
 .login-password-label { margin: 6px 0 0; }
@@ -529,10 +552,12 @@ a { color: inherit; }
   align-items: center;
   gap: 16px;
   padding: 16px 24px;
-  border-bottom: 1px solid var(--line);
-  background: var(--surface);
+  border-bottom: 4px solid var(--highlight);
+  background: var(--accent);
+  color: #FFFFFF;
 }
 .admin-header h1 { font-size: 22px; font-weight: 800; }
+.admin-header .eyebrow { color: #F7B567; }
 .admin-header-actions { display: flex; gap: 8px; }
 .admin-header-actions .secondary-button { width: auto; min-height: 40px; font-size: 14px; }
 .admin-main { padding: 20px 24px 48px; }
@@ -543,7 +568,7 @@ a { color: inherit; }
   align-items: flex-start;
   gap: 12px;
 }
-.panel-heading h2 { font-size: 18px; font-weight: 800; }
+.panel-heading h2 { color: var(--accent); font-size: 18px; font-weight: 800; }
 .panel-heading p { color: var(--muted); font-size: 13px; }
 
 .kds-total-panel,
@@ -562,7 +587,8 @@ a { color: inherit; }
   gap: 10px;
   margin-top: 14px;
 }
-.kds-total-card { padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.kds-total-card { padding: 12px 14px; border: 1px solid #DCD1EC; border-radius: var(--radius-sm); background: var(--lavender); }
+.kds-total-card strong { color: var(--accent); }
 .kds-total-card span { display: block; font-size: 14px; font-weight: 700; }
 .kds-total-card strong { display: block; margin-top: 4px; font-size: 30px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .kds-total-card small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
@@ -654,7 +680,7 @@ a { color: inherit; }
 .metric-card span { display: block; color: var(--muted); font-size: 12px; font-weight: 600; }
 .metric-card strong { display: block; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .metric-card small { color: var(--faint); font-size: 11px; }
-.sales-card { background: var(--bg); }
+.sales-card { background: var(--highlight-soft); }
 
 /* 메뉴 관리 */
 .menu-settings { margin-top: 12px; }
@@ -744,7 +770,7 @@ a { color: inherit; }
 }
 
 @media (max-width: 420px) {
-  .customer-shell { padding-left: 16px; padding-right: 16px; }
+  .customer-shell { --gutter: 16px; }
   .sticky-action { padding-left: 16px; padding-right: 16px; }
   .menu-row-action { min-width: 0; }
   .summary-item { flex-wrap: wrap; }
