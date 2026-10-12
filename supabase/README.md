@@ -17,7 +17,7 @@
 데이터베이스 비밀번호는 채팅이나 파일에 저장하지 말고 아래 명령의 보안 프롬프트에 직접 입력합니다.
 
 ```bash
-cd /Users/jeong/여울제/yeoul2026
+cd /Users/jeong/연광제/yeongwang2026
 npx supabase link --project-ref rvamsrgvfubsvlttuaqt
 ```
 

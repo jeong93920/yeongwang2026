@@ -1,6 +1,6 @@
 # BASAK WITCH 부스 주문 웹앱
 
-여울제 2026 할로윈 부스 **BASAK WITCH**의 고객·관리자 주문 웹앱입니다.
+연광제 2026 할로윈 부스 **BASAK WITCH**의 고객·관리자 주문 웹앱입니다.
 Supabase에 연결된 정적 웹앱으로, GitHub Pages에 배포합니다.
 
 ## 디자인
@@ -65,7 +65,7 @@ Supabase에 연결된 정적 웹앱으로, GitHub Pages에 배포합니다.
 ## 로컬 실행
 
 ```bash
-python3 -m http.server 4173 --bind 127.0.0.1 --directory /Users/jeong/여울제/yeoul2026
+python3 -m http.server 4173 --bind 127.0.0.1 --directory /Users/jeong/연광제/yeongwang2026
 ```
 
 - 고객 화면: http://127.0.0.1:4173/
