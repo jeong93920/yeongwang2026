@@ -1,17 +1,17 @@
 /* ==========================================================================
-   기본 메뉴판 스타일 — 흰 바탕, 검은 글씨, 얇은 구분선, 강조색 하나.
+   BASAK WITCH 메뉴판 — 보라 밤하늘 헤더, 연보라 바탕, 흰 카드, 오렌지 포인트.
    ========================================================================== */
 
 :root {
-  --bg: #F6EFE3;
+  --bg: #F3EFFA;
   --surface: #FFFFFF;
-  --paper: #FFF9F0;
+  --paper: #F3EFFA;
   --lavender: #EEE8F6;
   --text: #1F1F1F;
   --muted: #6B6B6B;
   --faint: #A3A3A3;
-  --line: #EADFCE;
-  --line-strong: #CDBFA8;
+  --line: #E6DFF0;
+  --line-strong: #C9BCDD;
   --accent: #3B2A5C;
   --accent-text: #FFFFFF;
   --accent-soft: #F1EDF7;
@@ -149,34 +149,53 @@ a { color: inherit; }
   min-height: 100vh;
   margin: 0 auto;
   padding: 0 var(--gutter);
-  background: var(--paper);
+  background-color: var(--paper);
+  background-image: radial-gradient(#E2D9F0 1px, transparent 1.2px);
+  background-size: 18px 18px;
 }
 
 .brand {
-  margin: 0 calc(-1 * var(--gutter));
-  padding: 26px var(--gutter) 24px;
-  border-bottom: 4px solid var(--highlight);
-  background: var(--accent);
+  position: relative;
+  margin: 0 calc(-1 * var(--gutter)) 14px;
+  padding: 30px var(--gutter) 30px;
+  background: linear-gradient(180deg, #2B1F45 0%, var(--accent) 100%);
   color: #FFFFFF;
   text-align: center;
 }
-.brand-hat { display: block; width: 48px; height: 35px; margin: 0 auto 8px; }
+/* 부스 차양처럼 헤더 아래에 둥근 물결을 달아 둡니다. */
+.brand::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -12px;
+  height: 12px;
+  background: radial-gradient(circle at 12px 0, var(--accent) 11.5px, transparent 12px) 0 0 / 24px 12px repeat-x;
+}
+.brand-deco { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.brand-deco .moon { fill: #F7B567; }
+.brand-deco .spark { fill: #FFFFFF; opacity: .85; }
+.brand-deco .spark.small { fill: #F7B567; opacity: .9; }
+.brand-deco .dot { fill: #FFFFFF; opacity: .6; }
+.brand > :not(.brand-deco) { position: relative; }
+.brand-hat { display: block; width: 52px; height: 38px; margin: 0 auto 10px; }
 .brand-hat .hat { fill: #FFF9F0; }
 .brand-hat .hat-band { fill: var(--highlight); }
 .brand .eyebrow { color: #F7B567; letter-spacing: .12em; }
-.brand h1 { margin-top: 2px; color: #FFFFFF; font-size: 30px; font-weight: 800; letter-spacing: .06em; }
-.brand-tagline { margin-top: 4px; color: #D9CFEA; font-size: 13px; }
+.brand h1 { margin-top: 4px; color: #FFFFFF; font-size: 36px; font-weight: 800; line-height: 1.15; letter-spacing: .06em; }
 
 .customer-wait-summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 26px;
   padding: 12px 14px;
-  border: 1px solid #DCD1EC;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
   border-radius: var(--radius);
-  background: var(--lavender);
+  background: var(--surface);
+  box-shadow: 0 2px 10px rgba(59, 42, 92, .06);
 }
 .customer-wait-summary small { display: block; color: var(--accent); font-size: 12px; }
 .customer-wait-summary strong { font-size: 15px; }
@@ -211,9 +230,10 @@ a { color: inherit; }
 .menu-list .menu-row:last-child { border-bottom: 0; }
 .menu-section {
   padding: 16px 16px 4px;
-  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  border-radius: 14px;
   background: var(--surface);
-  box-shadow: 0 1px 0 var(--line);
+  box-shadow: 0 2px 12px rgba(59, 42, 92, .07);
 }
 .menu-section h3 {
   display: flex;
@@ -227,11 +247,9 @@ a { color: inherit; }
   letter-spacing: .08em;
 }
 .menu-section h3::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  background: var(--highlight);
-  transform: rotate(45deg);
+  content: "✦";
+  color: var(--highlight);
+  font-size: 14px;
 }
 .menu-row.set-row {
   margin: 10px 0 12px;
