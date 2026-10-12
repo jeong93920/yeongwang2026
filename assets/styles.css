@@ -177,8 +177,9 @@ a { color: inherit; }
 .deco-star.right { top: 36%; right: 7%; width: 14px; height: 14px; fill: #F7B567; }
 .deco-dot { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #FFFFFF; opacity: .55; }
 .brand > :not(.brand-deco) { position: relative; }
-.brand-witch { display: block; width: 76px; height: 76px; margin: -6px auto 4px; }
-.brand-witch .witch-hat,
+.brand-hat { display: block; width: 52px; height: 38px; margin: 0 auto 10px; }
+.brand-hat .hat { fill: #FFF9F0; }
+.brand-hat .hat-band { fill: var(--highlight); }
 .ready-alert-witch .witch-hat { fill: #241B33; stroke: #F7E9D2; stroke-width: 1.4; stroke-linejoin: round; }
 .brand .eyebrow { color: #F7B567; letter-spacing: .12em; }
 .brand h1 { margin-top: 4px; color: #FFFFFF; font-size: 36px; font-weight: 800; line-height: 1.15; letter-spacing: .06em; }
@@ -513,7 +514,7 @@ a { color: inherit; }
 
 /* 움직임 — 동작 줄이기 설정을 켠 기기에서는 모두 꺼집니다. */
 @media (prefers-reduced-motion: no-preference) {
-  .brand-witch { transform-origin: 50% 85%; animation: witch-bob 3.6s ease-in-out infinite; }
+  .brand-hat { transform-origin: 50% 85%; animation: witch-bob 3.6s ease-in-out infinite; }
   .deco-moon { animation: moon-float 7s ease-in-out infinite; }
   .deco-star { animation: twinkle 2.6s ease-in-out infinite; }
   .deco-star.left { animation-delay: .9s; }
