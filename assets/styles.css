@@ -253,6 +253,9 @@ a { color: inherit; }
   background: var(--highlight-soft);
 }
 .set-row .menu-row-title h4 { white-space: nowrap; }
+/* 할인 배지와 안내 문구가 폰에서도 한 줄에 들어가도록 세트 줄 여백을 줄입니다. */
+.set-row .menu-row-note { white-space: nowrap; letter-spacing: -.02em; }
+.set-row .discount-badge { margin-right: 0; padding: 1px 6px; }
 .discount-badge {
   display: inline-block;
   padding: 1px 7px;
@@ -875,6 +878,8 @@ a { color: inherit; }
 
 @media (max-width: 420px) {
   .customer-shell { --gutter: 16px; }
+  .menu-row.set-row { padding: 12px 10px; gap: 10px; }
+  .set-row .add-button { min-width: 60px; padding: 6px 10px; }
   .sticky-action { padding-left: 16px; padding-right: 16px; }
   .menu-row-action { min-width: 0; }
   .summary-item { flex-wrap: wrap; }
@@ -883,4 +888,12 @@ a { color: inherit; }
   .my-order-status { text-align: left; }
   .queue-row { grid-template-columns: 1fr; gap: 6px; }
   .queue-row > strong { padding-top: 0; }
+}
+
+@media (max-width: 374px) {
+  .set-row .menu-row-note { font-size: 11px; }
+}
+/* 아주 좁은 화면에서는 버튼과 겹치지 않게 줄바꿈을 허용합니다. */
+@media (max-width: 340px) {
+  .set-row .menu-row-note { white-space: normal; }
 }
