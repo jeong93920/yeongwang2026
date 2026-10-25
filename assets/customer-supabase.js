@@ -181,7 +181,7 @@
     return `<li class="menu-row set-row ${unavailable ? 'sold-out' : ''}">
       <div class="menu-row-main">
         <div class="menu-row-title"><h4>바삭 세트</h4><span class="menu-dots" aria-hidden="true"></span><strong>${unavailable ? '—' : `${store.formatPrice(minPrice)}~`}</strong></div>
-        <p class="menu-row-note">${setDiscount(state) ? `<span class="discount-badge">${store.formatPrice(setDiscount(state))} 할인</span> ` : ''}토스트 + 음료를 골라주세요</p>
+        <p class="menu-row-note">${setDiscount(state) ? `<span class="discount-badge">${store.formatPrice(setDiscount(state))} 할인</span> ` : ''}튀김산도 + 음료를 골라주세요</p>
       </div>
       <div class="menu-row-action">${unavailable
         ? '<span class="sold-out-label">품절</span>'
@@ -207,9 +207,9 @@
     const others = state.menu.filter(item => !['toast', 'drink'].includes(item.category));
     const section = (title, rows) => rows ? `<section class="menu-section"><h3>${title}</h3><ul class="menu-list">${rows}</ul></section>` : '';
     $('#menu-board').innerHTML = [
-      section('토스트', toasts.map(menuRow).join('')),
-      section('음료', drinks.map(menuRow).join('')),
       section('세트', setRow(state)),
+      section('튀김산도', toasts.map(menuRow).join('')),
+      section('음료', drinks.map(menuRow).join('')),
       section('기타', others.map(menuRow).join(''))
     ].join('');
     // 첫 화면에서만 메뉴 카드가 차례로 올라오고, 이후 실시간 갱신 때는 다시 움직이지 않게 합니다.
@@ -272,7 +272,7 @@
     const drink = findMenu(state, sheet.drinkId);
     if (!drink || !drink.altName) sheet.drinkAlt = false;
     $('#sheet-title').textContent = '바삭 세트';
-    body.innerHTML = `<fieldset class="choice-group"><legend>토스트 선택</legend>
+    body.innerHTML = `<fieldset class="choice-group"><legend>튀김산도 선택</legend>
         ${toasts.map(item => radio('toast', item.id, item.id === sheet.toastId, escapeHtml(item.name), store.formatPrice(item.price), !isAvailable(item))).join('')}
       </fieldset>
       <fieldset class="choice-group"><legend>음료 선택</legend>
@@ -294,7 +294,7 @@
       $('#sheet-price').textContent = setDiscount(state) ? `세트 ${store.formatPrice(setDiscount(state))} 할인` : '';
     }
     $('#sheet-add').disabled = !spec;
-    $('#sheet-add').textContent = spec ? '세트 담기' : '토스트와 음료를 골라주세요';
+    $('#sheet-add').textContent = spec ? '세트 담기' : '튀김산도와 음료를 골라주세요';
   }
 
   function openSheet(next) {
