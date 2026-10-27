@@ -10,7 +10,7 @@
   <link rel="icon" type="image/png" sizes="512x512" href="../assets/favicon-witch.png?v=20261013">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon-witch.png?v=20261013">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-  <link rel="stylesheet" href="../assets/styles.css?v=202610280300">
+  <link rel="stylesheet" href="../assets/styles.css?v=202610280400">
 </head>
 <body class="admin-body">
   <main class="admin-login-wrap" id="admin-login">
@@ -33,6 +33,7 @@
     <header class="admin-header kds-header">
       <div><p class="eyebrow">BASAK WITCH · 주방</p><h1>주문 현황</h1></div>
       <div class="admin-header-actions">
+        <button class="secondary-button link-button" id="manual-order-open" type="button">+ 수동 주문</button>
         <a class="secondary-button link-button" href="../index.html" target="_blank" rel="noopener noreferrer">고객 화면</a>
         <button class="secondary-button" id="admin-logout" type="button">로그아웃</button>
       </div>
@@ -51,7 +52,6 @@
         <section class="admin-panel orders-panel kds-orders-panel">
           <div class="panel-heading orders-heading">
             <div><h2>주문별 작업</h2><p>오래된 주문부터 처리합니다.</p></div>
-            <button class="primary-button manual-order-open" id="manual-order-open" type="button">+ 수동 주문</button>
             <div class="order-counts" aria-label="주문 단계별 현황">
               <span class="order-count payment">입금 확인 필요 <b id="metric-payment">0</b></span>
               <span class="order-count cooking">접수·조리 중 <b id="metric-cooking">0</b></span>
@@ -103,13 +103,12 @@
         <button class="sheet-close" type="button" data-manual-close aria-label="닫기">×</button>
       </div>
       <div class="sheet-body">
-        <p class="field-help manual-order-help">고객 화면을 쓸 수 없을 때 직접 주문을 넣습니다. 가격·세트 할인·재고는 손님 주문과 똑같이 계산돼요.</p>
+        <p class="field-help manual-order-help">고객 화면을 쓸 수 없을 때 직접 주문을 넣습니다. 입금 확인된 주문으로 바로 조리 중에 들어가요.</p>
         <div id="manual-order-menu"></div>
         <label class="field-label" for="manual-payer">입금자 이름 <small>(선택)</small></label>
         <input class="text-input" id="manual-payer" maxlength="20" placeholder="비우면 '현장 주문'으로 저장">
         <label class="field-label" for="manual-contact">연락처 <small>(선택)</small></label>
         <input class="text-input" id="manual-contact" type="tel" inputmode="numeric" maxlength="13" placeholder="010-1234-5678">
-        <label class="manual-paid"><input type="checkbox" id="manual-paid" checked> 입금 확인 완료 · 바로 조리 중으로 넣기</label>
       </div>
       <div class="sheet-foot">
         <div class="sheet-price" id="manual-order-total">0원</div>
@@ -122,6 +121,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
   <script src="../assets/supabase-config.js"></script>
   <script src="../assets/supabase-store.js?v=202610280300"></script>
-  <script src="../assets/admin-supabase.js?v=202610280300"></script>
+  <script src="../assets/admin-supabase.js?v=202610280400"></script>
 </body>
 </html>

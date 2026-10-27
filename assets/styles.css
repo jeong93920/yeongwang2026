@@ -912,7 +912,6 @@ a { color: inherit; }
 }
 
 /* 관리자 수동 주문 */
-.manual-order-open { width: auto; min-height: 40px; padding: 8px 16px; font-size: 14px; }
 .manual-order-help { margin: 4px 0 6px; }
 .manual-section-title { margin: 16px 0 4px; color: var(--accent); font-size: 14px; font-weight: 800; }
 .manual-row {
@@ -937,8 +936,6 @@ a { color: inherit; }
   font-size: 14px;
 }
 .manual-set-pick .secondary-button { width: auto; min-height: 44px; padding: 8px 14px; font-size: 14px; }
-.manual-paid { display: flex; align-items: center; gap: 8px; margin: 16px 0 6px; font-size: 14px; font-weight: 700; }
-.manual-paid input { width: 18px; height: 18px; accent-color: var(--accent); }
 .field-label small { color: var(--muted); font-weight: 400; }
 @media (max-width: 520px) {
   .manual-set-pick { grid-template-columns: 1fr 1fr; }
