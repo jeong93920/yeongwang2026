@@ -359,7 +359,6 @@
     manualSet.drink = '';
     $('#manual-payer').value = '';
     $('#manual-contact').value = '';
-    $('#manual-paid').checked = true;
   }
 
   function closeManualOrder() {
@@ -401,7 +400,7 @@
         payerName: $('#manual-payer').value,
         contact: $('#manual-contact').value,
         items: [...manualLines.values()],
-        paid: $('#manual-paid').checked
+        paid: true
       });
       toast(`#${order.orderNumber} 주문을 넣었어요 · ${store.formatPrice(order.totalAmount)}`);
       resetManualOrder();
