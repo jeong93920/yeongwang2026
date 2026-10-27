@@ -279,6 +279,32 @@
     return order;
   }
 
+  // 고객 화면을 쓸 수 없을 때 관리자가 직접 넣는 주문입니다. 연락처는 선택입니다.
+  async function adminCreateOrder({ payerName, contact, items, paid }) {
+    const normalizedItems = items
+      .map(item => ({
+        menu_id: item.menuId,
+        quantity: Math.min(20, Math.max(0, Number(item.quantity) || 0)),
+        alt: Boolean(item.alt),
+        set_drink_id: item.setDrinkId || null,
+        set_drink_alt: Boolean(item.setDrinkAlt)
+      }))
+      .filter(item => item.quantity > 0);
+    if (!normalizedItems.length) throw new Error('주문할 메뉴를 담아 주세요.');
+    const normalizedContact = String(contact || '').replace(/[^0-9]/g, '');
+    if (normalizedContact && !/^01[0-9]{8,9}$/.test(normalizedContact)) throw new Error('연락처는 01로 시작하는 번호로 입력하거나 비워 두세요.');
+    const data = throwIfError(await client.rpc('booth_admin_create_order', {
+      p_payer_name: String(payerName || '').trim(),
+      p_contact: normalizedContact,
+      p_items: normalizedItems,
+      p_paid: Boolean(paid)
+    }));
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) throw new Error('주문 결과를 확인하지 못했습니다.');
+    await loadAdminState();
+    return { orderNumber: Number(row.order_number), status: row.status, totalAmount: Number(row.total_amount) };
+  }
+
   async function updateOrderStatus(orderId, status) {
     throwIfError(await client.from('booth_orders').update({ status }).eq('id', orderId));
     await loadAdminState();
@@ -406,7 +432,7 @@
   function formatPrice(value) { return `${Number(value || 0).toLocaleString('ko-KR')}원`; }
 
   window.BoothStore = {
-    getState, ready, subscribe, createOrder, updateOrderStatus, toggleSoldOut, updateMenuItem, updateSetDiscount,
+    getState, ready, subscribe, createOrder, adminCreateOrder, updateOrderStatus, toggleSoldOut, updateMenuItem, updateSetDiscount,
     calculateOrderTotal, setCurrentOrderId, getCurrentOrderId, clearCurrentOrder,
     getAuthState, signInWithPassword, signInWithOtp, signOut, formatPrice, refresh
   };
