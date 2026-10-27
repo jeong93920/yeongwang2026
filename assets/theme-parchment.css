@@ -1,0 +1,152 @@
+/* --------------------------------------------------------------------------
+   "마녀의 양피지" 테마 (고객 화면 전용)
+   index.html에서 이 파일 링크와 body의 theme-parchment 클래스만 빼면 원래 디자인으로 돌아갑니다.
+   -------------------------------------------------------------------------- */
+
+body.theme-parchment {
+  --bg: #E6D6B3;
+  --paper: #E6D6B3;
+  --surface: #F1E5CA;
+  --lavender: #E0CEA8;
+  --text: #2A1D14;
+  --muted: #6B5843;
+  --faint: #A08F75;
+  --line: #CDB78C;
+  --line-strong: #A88F64;
+  --accent: #3A2148;
+  --accent-text: #F6ECD6;
+  --accent-soft: #E3D3B2;
+  --highlight: #A9481A;
+  --highlight-soft: #EBD5AE;
+  --ok: #4F6B2A;
+  --ok-soft: rgba(111, 140, 60, .18);
+  --warn: #9A4A16;
+  --warn-soft: rgba(169, 72, 26, .12);
+  --ink: #1E140D;
+  background:
+    radial-gradient(ellipse at 50% 30%, #4B2E5E 0%, #2C1B3A 55%, #1B1024 100%) fixed;
+}
+
+/* 양피지 바탕: 종이 결 + 가장자리 얼룩 + 흐릿한 마법진 */
+.theme-parchment .customer-shell {
+  position: relative;
+  background-color: var(--paper);
+  background-image:
+    url("./parchment/sigil.svg"),
+    url("./parchment/sigil.svg"),
+    url("./parchment/grain.svg"),
+    radial-gradient(ellipse at 50% 40%, rgba(255, 248, 228, .55) 0%, rgba(255, 248, 228, 0) 60%),
+    radial-gradient(ellipse at 0% 100%, rgba(120, 82, 40, .22) 0%, rgba(120, 82, 40, 0) 45%),
+    radial-gradient(ellipse at 100% 60%, rgba(120, 82, 40, .18) 0%, rgba(120, 82, 40, 0) 40%);
+  background-repeat: no-repeat, no-repeat, repeat, no-repeat, no-repeat, no-repeat;
+  background-size: 230px 230px, 190px 190px, 220px 220px, 100% 100%, 100% 100%, 100% 100%;
+  background-position: right -90px top 560px, left -80px bottom 160px, 0 0, 0 0, 0 0, 0 0;
+  box-shadow: inset 0 0 60px rgba(92, 60, 26, .35);
+}
+.theme-parchment .customer-shell::before {
+  /* 마법진은 아주 흐리게만 보이도록 종이색을 한 겹 덮습니다. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(230, 214, 179, .25);
+  pointer-events: none;
+}
+.theme-parchment .customer-shell > * { position: relative; }
+
+/* 헤더: 보라 밤하늘 */
+.theme-parchment .brand {
+  padding: 34px var(--gutter) 34px;
+  background:
+    radial-gradient(ellipse at 50% 0%, #563670 0%, #2C1B3A 70%);
+  border-bottom: 3px solid #8A5A2B;
+  border-radius: 0 0 50% 50% / 0 0 26px 26px;
+}
+.theme-parchment .deco-moon { fill: #D9A25B; }
+.theme-parchment .brand-hat .hat { fill: #F1E5CA; }
+.theme-parchment .brand-hat .hat-band { fill: #C0752F; }
+.theme-parchment .brand .eyebrow { color: #E2B57A; }
+.theme-parchment .brand h1 { color: #F1E5CA; text-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+
+/* 대기 현황·진행 바 */
+.theme-parchment .customer-wait-summary {
+  border: 1px solid var(--line-strong);
+  background: rgba(241, 229, 202, .75);
+  box-shadow: none;
+}
+.theme-parchment .customer-wait-summary small { color: var(--muted); }
+.theme-parchment .live-badge { background: rgba(58, 33, 72, .08); color: var(--accent); }
+.theme-parchment .step-progress span { background: rgba(107, 74, 38, .2); }
+.theme-parchment .step-progress span.active { background: var(--highlight); }
+
+/* 제목: 잉크색 */
+.theme-parchment .section-heading h2,
+.theme-parchment .sheet-head h2,
+.theme-parchment .queue-heading h3 { color: var(--ink); }
+
+/* 메뉴판: 카드 없이 종이 위에 바로 적힌 느낌 */
+.theme-parchment .menu-section {
+  padding: 4px 2px 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.theme-parchment .menu-section + .menu-section { margin-top: 22px; }
+.theme-parchment .menu-section h3 {
+  border-bottom: 1.5px solid rgba(42, 29, 20, .55);
+  color: var(--ink);
+}
+.theme-parchment .menu-row { border-bottom: 1px dashed rgba(107, 74, 38, .35); }
+.theme-parchment .menu-row-title h4,
+.theme-parchment .menu-row-title strong { color: var(--ink); }
+.theme-parchment .menu-dots { border-bottom: 2px dotted rgba(42, 29, 20, .6); }
+.theme-parchment .menu-row-note { color: var(--muted); }
+
+.theme-parchment .menu-row.set-row {
+  border: 2px solid var(--highlight);
+  background: #F5E7C8;
+  box-shadow: 0 3px 10px rgba(169, 72, 26, .18);
+}
+.theme-parchment .set-row .menu-row-title h4 { font-size: 17px; }
+.theme-parchment .set-row .menu-row-title strong { color: var(--highlight); }
+.theme-parchment .discount-badge { background: var(--highlight); color: #F6ECD6; }
+
+/* 버튼: 짙은 보라 잉크 */
+.theme-parchment .add-button,
+.theme-parchment .primary-button {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.theme-parchment .quantity-control {
+  border-color: var(--line-strong);
+  background: rgba(241, 229, 202, .8);
+  color: var(--accent);
+}
+.theme-parchment .sticky-action {
+  border-top: 1px solid var(--line-strong);
+  background: #E6D6B3 url("./parchment/grain.svg");
+  box-shadow: 0 -6px 18px rgba(92, 60, 26, .15);
+}
+
+/* 입력·요약·결제 카드 */
+.theme-parchment .text-input { border-color: var(--line-strong); background: #F6EDD7; }
+.theme-parchment .order-summary,
+.theme-parchment .account-card,
+.theme-parchment .my-order-card,
+.theme-parchment .public-queue {
+  border-color: var(--line-strong);
+  background: rgba(241, 229, 202, .8);
+}
+.theme-parchment .sheet { background: #EFE2C4 url("./parchment/grain.svg"); }
+.theme-parchment .choice { background: rgba(246, 237, 215, .8); }
+
+/* 송금 화면 주문번호: 짙은 보라 바탕에 밝은 글씨로 또렷하게 */
+.theme-parchment .order-number-strip { background: var(--accent); color: var(--accent-text); }
+.theme-parchment .order-number-strip span { color: rgba(246, 236, 214, .75); }
+
+/* 대기열: 양피지 톤의 이끼 초록(수령 가능)·녹슨 주황(조리 중) */
+.theme-parchment .queue-row { border-color: var(--line); }
+.theme-parchment .queue-number { border-color: var(--line-strong); background: rgba(246, 237, 215, .7); color: var(--text); }
+.theme-parchment .queue-row.ready .queue-number { border-color: rgba(79, 107, 42, .5); }
+.theme-parchment .queue-row.cooking .queue-number { border-color: rgba(154, 74, 22, .45); }
+.theme-parchment .queue-number.mine { border-color: var(--accent); background: var(--accent); color: var(--accent-text); }
