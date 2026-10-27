@@ -705,6 +705,8 @@ a { color: inherit; }
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 10px;
 }
+/* 주문이 없을 때 안내 칸은 카드 한 칸이 아니라 목록 전체 폭을 씁니다. */
+.kds-orders > .empty-state { grid-column: 1 / -1; }
 .admin-order {
   display: flex;
   flex-direction: column;
