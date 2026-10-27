@@ -648,7 +648,18 @@ a { color: inherit; }
 .admin-header h1 { font-size: 22px; font-weight: 800; }
 .admin-header .eyebrow { color: #F7B567; }
 .admin-header-actions { display: flex; gap: 8px; }
-.admin-header-actions .secondary-button { width: auto; min-height: 40px; font-size: 14px; }
+/* 상단 버튼은 작고 차분하게: 보라 헤더 위에 반투명 테두리만 둡니다. */
+.admin-header-actions .secondary-button {
+  width: auto;
+  min-height: 32px;
+  padding: 5px 12px;
+  border-color: rgba(255, 255, 255, .28);
+  background: rgba(255, 255, 255, .08);
+  color: rgba(255, 255, 255, .88);
+  font-size: 13px;
+  font-weight: 600;
+}
+.admin-header-actions .secondary-button:hover { background: rgba(255, 255, 255, .16); }
 .admin-main { padding: 20px 24px 48px; }
 
 .panel-heading {
@@ -875,7 +886,7 @@ a { color: inherit; }
 
 @media (max-width: 720px) {
   .admin-header { flex-direction: column; align-items: stretch; padding: 16px; }
-  .admin-header-actions > * { flex: 1; }
+  .admin-header-actions { flex-wrap: wrap; }
   .admin-main { padding: 14px 16px 44px; }
   .kds-orders { grid-template-columns: 1fr; }
   .admin-menu-item { grid-template-columns: 1fr; }

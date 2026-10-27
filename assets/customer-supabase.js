@@ -148,7 +148,9 @@
     if (item.altName) notes.push(`${escapeHtml(item.altName)}로 변경 가능`);
     if (item.description) notes.push(escapeHtml(item.description));
     if (stock != null && stock > 0) notes.push(`남은 수량 ${stock}개`);
-    notes.push(`소요시간 ${prepSpeedLabels[item.prepSpeed] || prepSpeedLabels.normal}`);
+    // 품절이면 소요시간 대신 품절 안내만 보여 줍니다.
+    if (unavailable) notes.splice(0, notes.length, '지금은 품절이에요');
+    else notes.push(`소요시간 ${prepSpeedLabels[item.prepSpeed] || prepSpeedLabels.normal}`);
 
     let control;
     if (unavailable) {
