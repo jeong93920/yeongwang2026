@@ -273,10 +273,10 @@
     if (!drink || !drink.altName) sheet.drinkAlt = false;
     $('#sheet-title').textContent = '바삭 세트';
     body.innerHTML = `<fieldset class="choice-group"><legend>튀김산도 선택</legend>
-        ${toasts.map(item => radio('toast', item.id, item.id === sheet.toastId, escapeHtml(item.name), store.formatPrice(item.price), !isAvailable(item))).join('')}
+        ${toasts.map(item => radio('toast', item.id, item.id === sheet.toastId, escapeHtml(item.name), isAvailable(item) ? store.formatPrice(item.price) : '품절', !isAvailable(item))).join('')}
       </fieldset>
       <fieldset class="choice-group"><legend>음료 선택</legend>
-        ${drinks.map(item => radio('drink', item.id, item.id === sheet.drinkId, escapeHtml(item.name) + (item.altName ? ` <small>(${escapeHtml(item.altName)} 가능)</small>` : ''), store.formatPrice(item.price), !isAvailable(item))).join('')}
+        ${drinks.map(item => radio('drink', item.id, item.id === sheet.drinkId, escapeHtml(item.name) + (item.altName ? ` <small>(${escapeHtml(item.altName)} 가능)</small>` : ''), isAvailable(item) ? store.formatPrice(item.price) : '품절', !isAvailable(item))).join('')}
       </fieldset>
       ${drink && drink.altName ? `<fieldset class="choice-group"><legend>음료 종류</legend>
         ${radio('drink-alt', '0', !sheet.drinkAlt, escapeHtml(drink.name))}

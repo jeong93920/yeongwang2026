@@ -273,12 +273,153 @@
     if (document.activeElement !== input) input.value = state.settings.setDiscount;
   }
 
+  // 수동 주문: 고객 화면을 쓸 수 없을 때 관리자가 직접 주문을 넣습니다.
+  const manualLines = new Map();
+  const manualSet = { toastId: '', drink: '' };
+  const manualKey = line => [line.menuId, line.alt ? 1 : 0, line.setDrinkId || '', line.setDrinkAlt ? 1 : 0].join('|');
+  const menuAvailable = item => Boolean(item) && item.active && !item.soldOut && item.stockRemaining !== 0;
+  const findMenu = (state, id) => state.menu.find(item => item.id === id);
+
+  function manualLinePrice(state, line) {
+    const menu = findMenu(state, line.menuId);
+    if (!menu) return 0;
+    if (!line.setDrinkId) return menu.price;
+    const drink = findMenu(state, line.setDrinkId);
+    return drink ? menu.price + drink.price - Math.max(0, Number(state.settings.setDiscount) || 0) : 0;
+  }
+
+  function manualLineName(state, line) {
+    const menu = findMenu(state, line.menuId);
+    if (!menu) return '';
+    if (!line.setDrinkId) return line.alt ? menu.altName : menu.name;
+    const drink = findMenu(state, line.setDrinkId);
+    return drink ? `${menu.name} + ${line.setDrinkAlt ? drink.altName : drink.name}` : '';
+  }
+
+  function manualStepper(line) {
+    const quantity = (manualLines.get(manualKey(line)) || {}).quantity || 0;
+    const data = `data-manual-line='${escapeHtml(JSON.stringify(line))}'`;
+    return `<div class="quantity-control">
+      <button type="button" ${data} data-change="-1" aria-label="수량 줄이기" ${quantity ? '' : 'disabled'}>−</button>
+      <span>${quantity}</span>
+      <button type="button" ${data} data-change="1" aria-label="수량 늘리기" ${quantity >= 20 ? 'disabled' : ''}>+</button>
+    </div>`;
+  }
+
+  function renderManualOrder(state) {
+    if ($('#manual-order').hidden) return;
+    // 품절되거나 판매 중지된 메뉴가 든 줄은 뺍니다.
+    [...manualLines.entries()].forEach(([key, line]) => {
+      if (![line.menuId, line.setDrinkId].filter(Boolean).every(id => menuAvailable(findMenu(state, id)))) manualLines.delete(key);
+    });
+
+    const active = state.menu.filter(item => item.active);
+    const toasts = active.filter(item => item.category === 'toast');
+    const drinks = active.filter(item => item.category === 'drink');
+    const singles = active.flatMap(item => [{ item, alt: false }].concat(item.altName ? [{ item, alt: true }] : []));
+    const singleRows = singles.map(({ item, alt }) => {
+      const name = escapeHtml(alt ? item.altName : item.name);
+      const control = menuAvailable(item) ? manualStepper({ menuId: item.id, alt }) : '<span class="sold-out-label">품절</span>';
+      return `<div class="manual-row ${menuAvailable(item) ? '' : 'sold-out'}"><span>${name}</span><em>${store.formatPrice(item.price)}</em>${control}</div>`;
+    }).join('');
+
+    let setBlock = '';
+    if (toasts.length && drinks.length) {
+      const option = (value, label, available, selected) => `<option value="${value}" ${available ? '' : 'disabled'} ${selected ? 'selected' : ''}>${escapeHtml(label)}${available ? '' : ' (품절)'}</option>`;
+      const drinkOptions = drinks.flatMap(item => [option(`${item.id}|0`, item.name, menuAvailable(item), manualSet.drink === `${item.id}|0`)]
+        .concat(item.altName ? [option(`${item.id}|1`, item.altName, menuAvailable(item), manualSet.drink === `${item.id}|1`)] : []));
+      const setLines = [...manualLines.values()].filter(line => line.setDrinkId).map(line => {
+        const spec = { menuId: line.menuId, setDrinkId: line.setDrinkId, setDrinkAlt: line.setDrinkAlt };
+        return `<div class="manual-row"><span>${escapeHtml(manualLineName(state, line))}</span><em>${store.formatPrice(manualLinePrice(state, line))}</em>${manualStepper(spec)}</div>`;
+      }).join('');
+      setBlock = `<h3 class="manual-section-title">바삭 세트</h3>
+        <div class="manual-set-pick">
+          <select id="manual-set-toast" aria-label="세트 튀김산도"><option value="">튀김산도 선택</option>${toasts.map(item => option(item.id, item.name, menuAvailable(item), manualSet.toastId === item.id)).join('')}</select>
+          <select id="manual-set-drink" aria-label="세트 음료"><option value="">음료 선택</option>${drinkOptions.join('')}</select>
+          <button class="secondary-button" id="manual-set-add" type="button">세트 추가</button>
+        </div>${setLines}`;
+    }
+
+    $('#manual-order-menu').innerHTML = `<h3 class="manual-section-title">단품</h3>${singleRows}${setBlock}`;
+    const total = [...manualLines.values()].reduce((sum, line) => sum + manualLinePrice(state, line) * line.quantity, 0);
+    $('#manual-order-total').textContent = store.formatPrice(total);
+    $('#manual-order-submit').disabled = !manualLines.size;
+  }
+
+  function changeManualLine(line, change) {
+    const key = manualKey(line);
+    const next = Math.min(20, Math.max(0, ((manualLines.get(key) || {}).quantity || 0) + change));
+    if (next) manualLines.set(key, { ...line, quantity: next });
+    else manualLines.delete(key);
+  }
+
+  function resetManualOrder() {
+    manualLines.clear();
+    manualSet.toastId = '';
+    manualSet.drink = '';
+    $('#manual-payer').value = '';
+    $('#manual-contact').value = '';
+    $('#manual-paid').checked = true;
+  }
+
+  function closeManualOrder() {
+    $('#manual-order').hidden = true;
+    document.body.classList.remove('sheet-open');
+  }
+
+  $('#manual-order-open').addEventListener('click', () => {
+    $('#manual-order').hidden = false;
+    document.body.classList.add('sheet-open');
+    renderManualOrder(store.getState());
+  });
+
+  $('#manual-order').addEventListener('click', event => {
+    if (event.target === event.currentTarget || event.target.closest('[data-manual-close]')) return closeManualOrder();
+    const lineButton = event.target.closest('[data-manual-line]');
+    if (lineButton) {
+      changeManualLine(JSON.parse(lineButton.dataset.manualLine), Number(lineButton.dataset.change));
+      return renderManualOrder(store.getState());
+    }
+    if (event.target.closest('#manual-set-add')) {
+      if (!manualSet.toastId || !manualSet.drink) return toast('세트의 튀김산도와 음료를 골라 주세요.');
+      const [drinkId, alt] = manualSet.drink.split('|');
+      changeManualLine({ menuId: manualSet.toastId, setDrinkId: drinkId, setDrinkAlt: alt === '1' }, 1);
+      renderManualOrder(store.getState());
+    }
+  });
+
+  $('#manual-order').addEventListener('change', event => {
+    if (event.target.id === 'manual-set-toast') manualSet.toastId = event.target.value;
+    if (event.target.id === 'manual-set-drink') manualSet.drink = event.target.value;
+  });
+
+  $('#manual-order-submit').addEventListener('click', async event => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    try {
+      const order = await store.adminCreateOrder({
+        payerName: $('#manual-payer').value,
+        contact: $('#manual-contact').value,
+        items: [...manualLines.values()],
+        paid: $('#manual-paid').checked
+      });
+      toast(`#${order.orderNumber} 주문을 넣었어요 · ${store.formatPrice(order.totalAmount)}`);
+      resetManualOrder();
+      closeManualOrder();
+    } catch (error) {
+      toast(error.message);
+    } finally {
+      button.disabled = !manualLines.size;
+    }
+  });
+
   function render(state) {
     renderMenuTotals(state);
     renderMetrics(state);
     renderOrders(state);
     renderMenu(state);
     renderSetDiscount(state);
+    renderManualOrder(state);
   }
 
   $('#save-set-discount').addEventListener('click', async event => {
