@@ -5,8 +5,8 @@
 
 ## 처음 계획 (2026-11-02)
 
-- [x] D1. 저장소 선택 로더 — 주소에 `?demo`가 있으면 Supabase 대신 데모 저장소를 불러온다 (`assets/boot.js`, `index.html`, `admin/index.html`)
-- [ ] D2. 데모 저장소 `assets/demo-store.js` — `BoothStore`와 같은 함수, 메뉴·설정·예시 주문, 서버와 같은 가격·세트 할인·재고 계산, localStorage 저장
+- [x] D1. 저장소 선택 로더 — 주소에 `?demo`가 있으면 Supabase 대신 데모 저장소를 불러온다 (`assets/boot.js`, `index.html`, `admin/index.html`) — `aa59c6d`
+- [x] D2. 데모 저장소 `assets/demo-store.js` — `BoothStore`와 같은 함수, 메뉴·설정·예시 주문, 서버와 같은 가격·세트 할인·재고 계산, localStorage 저장
 - [ ] D3. 탭 간 실시간 동기화 — 고객 탭과 관리자 탭이 `storage` 이벤트로 같은 주문 상태를 본다
 - [ ] D4. 데모 안내 배너 — "데모 모드" 표시, 고객↔관리자 데모 화면 이동 링크, 데모 초기화 버튼
 - [ ] D5. 관리자 데모 — 로그인 없이 주방 화면을 연다
@@ -20,3 +20,4 @@
 | --- | --- | --- |
 | 11/02 | D1: `index.html`·`admin/index.html`에서 Supabase script 4줄을 `boot.js` 한 줄로 바꾸고, 불러올 파일 이름은 `data-store`·`data-demo`·`data-page` 속성으로 넘김 | 고객·관리자 페이지가 경로(`./assets`, `../assets`)만 다르고 순서는 같아서 로더 하나로 처리 |
 | 11/02 | 각 항목의 커밋 해시는 그 다음 항목 커밋에서 적음 | 커밋은 자기 자신의 해시를 내용에 넣을 수 없음 |
+| 11/02 | D2: 예시 주문 9건(10/28·10/29 완료 6건, 지금 진행 중 3건)과 초코 튀김산도 재고 12개를 시드에 넣음 | 관리자 매출 칸·재고 표시·품절 흐름을 처음부터 보여 주려고 |
