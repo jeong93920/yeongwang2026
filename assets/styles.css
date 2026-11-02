@@ -952,3 +952,16 @@ a { color: inherit; }
   .manual-set-pick { grid-template-columns: 1fr 1fr; }
   .manual-set-pick .secondary-button { grid-column: 1 / -1; width: 100%; }
 }
+
+/* ---- 데모 모드 안내 배너 (?demo일 때만 demo-store.js가 넣습니다) ---- */
+.demo-banner {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 12px;
+  padding: 8px 16px; background: var(--highlight-soft); border-bottom: 1px solid var(--highlight);
+  color: var(--text); font-size: 13px; line-height: 1.4; text-align: center;
+}
+.demo-banner strong { color: var(--highlight); font-weight: 800; }
+.demo-banner-actions { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.demo-banner a, .demo-banner button {
+  padding: 4px 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface);
+  color: var(--accent); font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; white-space: nowrap;
+}

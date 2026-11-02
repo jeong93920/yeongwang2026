@@ -201,6 +201,36 @@
     if (event.key === null || event.key === STATE_KEY || event.key === CURRENT_ORDER_KEY) refresh();
   });
 
+  // 처음 상태(시드)로 되돌립니다. 다른 탭은 storage 이벤트로 함께 초기화됩니다.
+  function resetDemo() {
+    clearCurrentOrder();
+    db = seed();
+    commit();
+  }
+
+  // ---- 데모 안내 배너: 데모 표시, 고객↔관리자 데모 이동, 초기화 ----
+  function mountBanner() {
+    const banner = document.createElement('div');
+    banner.className = 'demo-banner';
+    banner.setAttribute('role', 'note');
+    const otherHref = IS_ADMIN_PAGE ? '../?demo' : './admin/?demo';
+    const otherLabel = IS_ADMIN_PAGE ? '고객 화면 데모 열기' : '주방(관리자) 화면 데모 열기';
+    banner.innerHTML = `<span><strong>데모 모드</strong> · 실제 주문·결제가 일어나지 않아요</span>
+      <span class="demo-banner-actions">
+        <a href="${otherHref}" target="_blank" rel="noopener">${otherLabel}</a>
+        <button type="button" data-demo-reset>데모 초기화</button>
+      </span>`;
+    document.body.prepend(banner);
+    banner.querySelector('[data-demo-reset]').addEventListener('click', () => {
+      if (window.confirm('데모 주문과 메뉴 설정을 처음 상태로 되돌릴까요?')) resetDemo();
+    });
+    // 페이지 안의 고객·관리자 화면 링크도 데모 주소를 유지하게 합니다.
+    document.querySelectorAll('a[href$="index.html"]').forEach(link => {
+      link.href = link.getAttribute('href').replace(/index\.html$/, '?demo');
+    });
+  }
+  mountBanner();
+
   const readyPromise = Promise.resolve().then(() => {
     db = load();
     state = buildView();
@@ -330,6 +360,6 @@
     getState, ready, subscribe, createOrder, adminCreateOrder, updateOrderStatus, toggleSoldOut, updateMenuItem, updateSetDiscount,
     calculateOrderTotal, setCurrentOrderId, getCurrentOrderId, clearCurrentOrder,
     getAuthState, signInWithPassword, signInWithOtp, signOut, formatPrice, refresh,
-    isDemo: true
+    isDemo: true, resetDemo
   };
 })();
