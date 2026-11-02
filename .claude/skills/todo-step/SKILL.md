@@ -1,6 +1,6 @@
 ---
 name: todo-step
-description: BASAK WITCH 주문 웹앱에서 docs/TODO.md의 다음 항목 하나를 구현하고, 브라우저로 확인하고, TODO와 변경 내역을 갱신한 뒤 커밋·push·배포 확인까지 하는 절차. "다음 Todo 진행", "Todo 하나 처리", "todo-step" 같은 요청에 사용한다.
+description: BASAK WITCH QR 주문 관리 시스템에서 docs/TODO.md의 다음 항목 하나를 구현하고, 브라우저로 확인하고, TODO와 변경 내역을 갱신한 뒤 커밋·push·배포 확인까지 하는 절차. "다음 Todo 진행", "Todo 하나 처리", "todo-step" 같은 요청에 사용한다.
 ---
 
 # todo-step — Todo 항목 하나를 끝까지 처리하기

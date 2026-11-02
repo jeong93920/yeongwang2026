@@ -1,4 +1,4 @@
-# TODO — BASAK WITCH 부스 QR 주문 웹앱
+# TODO — BASAK WITCH 부스 QR 주문 관리 시스템
 
 [PRD](PRD.md)를 기준으로 단계별 작업을 나눴다. 항목 하나를 끝낼 때마다 확인하고 커밋·push한다.
 
