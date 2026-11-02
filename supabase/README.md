@@ -19,8 +19,8 @@ DB 구조는 마이그레이션 파일 하나에 모두 들어 있습니다.
 
 ```bash
 npx supabase link --project-ref <프로젝트 ref>   # 데이터베이스 비밀번호는 보안 프롬프트에 직접 입력
-npx supabase db push --linked --dry-run          # 적용될 파일 확인
-npx supabase db push --linked
+npx supabase db push --remote --dry-run          # 적용될 파일 확인
+npx supabase db push --remote
 ```
 
 1. Supabase **Authentication**에서 관리자 계정을 만듭니다.

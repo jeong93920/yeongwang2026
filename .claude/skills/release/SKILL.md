@@ -29,8 +29,8 @@ npx -y supabase@latest db query --linked --yes -f /tmp/try.sql   # 사용자에�
 
 ## 4. 적용
 ```bash
-npx -y supabase@latest db push --linked --dry-run 2>&1 | tail -8   # 이번 파일만 적용 대상인지 확인
-yes | npx -y supabase@latest db push --linked 2>&1 | tail -6       # "Finished supabase db push" 확인
+npx -y supabase@latest db push --remote --dry-run 2>&1 | tail -8   # 이번 파일만 적용 대상인지 확인
+yes | npx -y supabase@latest db push --remote 2>&1 | tail -6       # "Finished supabase db push" 확인
 ```
 적용 뒤 바뀐 값을 `--read-only` 쿼리로 확인한다(예: `select name, price, active from booth_menu_items order by sort_order;`).
 
