@@ -224,6 +224,9 @@
     banner.querySelector('[data-demo-reset]').addEventListener('click', () => {
       if (window.confirm('데모 주문과 메뉴 설정을 처음 상태로 되돌릴까요?')) resetDemo();
     });
+    // 데모 관리자는 로그인하지 않으므로 로그아웃 버튼은 숨깁니다.
+    const logout = document.querySelector('#admin-logout');
+    if (logout) logout.hidden = true;
     // 페이지 안의 고객·관리자 화면 링크도 데모 주소를 유지하게 합니다.
     document.querySelectorAll('a[href$="index.html"]').forEach(link => {
       link.href = link.getAttribute('href').replace(/index\.html$/, '?demo');
@@ -353,7 +356,8 @@
     try { localStorage.removeItem(CURRENT_ORDER_KEY); } catch (_) { /* 무시 */ }
     currentOrderId = null;
   }
-  function getAuthState() { return { session: null, isAdmin: false, initialized }; }
+  // 데모에서는 로그인 없이 관리자로 봅니다(주방 화면이 바로 열림).
+  function getAuthState() { return { session: IS_ADMIN_PAGE ? { demo: true } : null, isAdmin: IS_ADMIN_PAGE, initialized }; }
   function formatPrice(value) { return `${Number(value || 0).toLocaleString('ko-KR')}원`; }
 
   window.BoothStore = {
