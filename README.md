@@ -74,7 +74,7 @@
 메뉴·주문·매출 데이터는 모두 **Supabase**(클라우드 PostgreSQL)에 저장하고, 고객 화면과 주방 화면이 같은 DB를 실시간으로 함께 씁니다.
 
 - **연결**: 브라우저에서 `@supabase/supabase-js@2.49.4`로 접속합니다. `assets/supabase-config.js`에는 프로젝트 URL과 공개용 publishable key만 있고, 모든 권한을 가진 Service Role 키는 코드에 넣지 않았습니다.
-- **DB 구조 관리**: 테이블·함수·보안 정책을 `supabase/migrations/`의 SQL 파일 37개로 관리하고, Supabase CLI(`npx supabase db push`)로 실제 DB에 적용했습니다. 메뉴 교체, 세트 할인, 수동 주문 같은 기능도 마이그레이션으로 DB를 먼저 바꾼 뒤 화면을 배포했습니다.
+- **DB 구조 관리**: 테이블·함수·보안 정책·기본 데이터를 마이그레이션 파일 [`supabase/migrations/20261102120000_booth_schema.sql`](supabase/migrations/20261102120000_booth_schema.sql) 하나에 정리했고, Supabase CLI(`npx supabase db push`)로 실제 DB에 적용합니다. 메뉴 교체, 세트 할인, 수동 주문 같은 기능도 마이그레이션으로 DB를 먼저 바꾼 뒤 화면을 배포했습니다. 설치 방법은 [supabase/README.md](supabase/README.md)에 있습니다.
 
 | 테이블 | 저장하는 것 | 누가 읽나 |
 | --- | --- | --- |
@@ -543,7 +543,7 @@ assets/supabase-store.js   실제 모드 저장소(Supabase)
 assets/demo-store.js       데모 모드 저장소(localStorage)
 assets/customer-supabase.js, admin-supabase.js   화면 코드
 assets/styles.css, theme-parchment.css           디자인
-supabase/migrations/       DB 구조·함수·RLS 마이그레이션
+supabase/migrations/       DB 구조·함수·RLS·기본 데이터(파일 하나)
 docs/PRD.md                PRD(제품 요구사항)
 docs/TODO.md               Todo 리스트와 변경 내역
 docs/screenshots/flow/     주문 진행 단계 스크린샷(테스트가 촬영)

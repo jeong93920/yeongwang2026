@@ -1,76 +1,60 @@
-# Supabase 연결 준비
+# Supabase 설정
 
-대상 프로젝트: `rvamsrgvfubsvlttuaqt` (`Seoul`, ipad93920@gmail.com 계정의 독립 프로젝트)
+BASAK WITCH 부스 QR 주문 관리 시스템의 데이터베이스(Supabase) 설정입니다.
 
-이 프로젝트는 원래 예제였던 `vedraqrdkwyyipztxddw`와 완전히 분리된 새 Supabase 프로젝트입니다. 스키마(24개 마이그레이션 중 일반 스키마 마이그레이션)는 이미 적용 완료했습니다. 단, 원래 행사의 실데이터(관리자 이메일 등록, 주문 169번 수정, 수동주문 203/204)에 해당하는 5개 마이그레이션은 이 프로젝트에는 적용하지 않고 `migration repair --status applied`로 건너뛰도록 표시해두었습니다 — 파일은 히스토리 보존을 위해 저장소에 그대로 남아 있습니다.
+## 구조
 
-## 안전 원칙
+DB 구조는 마이그레이션 파일 하나에 모두 들어 있습니다.
 
-- 기존 앱의 테이블, 함수, 정책은 수정하지 않습니다.
-- 새 데이터베이스 객체는 모두 `booth_` 접두사를 사용합니다.
-- 메뉴 사진은 `booth-menu-images` 버킷에만 저장합니다.
-- Service Role 키는 브라우저 코드에 넣지 않습니다.
-- 고객에게는 `booth_public_queue`의 주문번호와 상태만 공개합니다.
+- [`migrations/20261102120000_booth_schema.sql`](migrations/20261102120000_booth_schema.sql)
+  - 테이블 6개: `booth_settings`, `booth_menu_items`, `booth_orders`, `booth_order_items`, `booth_public_queue`, `booth_admins`
+  - 주문 함수: `booth_create_order`(손님 주문), `booth_get_order`(내 주문 조회), `booth_admin_create_order`(주방 수동 주문), `booth_is_admin`
+  - 트리거: 주문이 생기거나 상태가 바뀌면 공개 대기열 갱신, 영업 중이 아니면 주문 거절, `updated_at` 자동 갱신
+  - 행 수준 보안(RLS) 정책과 권한, 메뉴 사진 버킷(`booth-menu-images`), 실시간 대기열(`supabase_realtime`)
+  - 기본 데이터: 부스 설정 1행, 메뉴 5개(튀김산도 3종, 음료 2종)
 
-## 1. 프로젝트 연결
+새 기능 때문에 DB를 바꿀 때는 이 파일을 고치지 않고, 더 늦은 시각의 마이그레이션 파일을 새로 추가합니다(`.claude/skills/release` 참고).
 
-데이터베이스 비밀번호는 채팅이나 파일에 저장하지 말고 아래 명령의 보안 프롬프트에 직접 입력합니다.
-
-```bash
-cd /Users/jeong/연광제/yeongwang2026
-npx supabase link --project-ref rvamsrgvfubsvlttuaqt
-```
-
-## 2. 적용 전 확인
+## 새 Supabase 프로젝트에 설치
 
 ```bash
-supabase db push --dry-run
+npx supabase link --project-ref <프로젝트 ref>   # 데이터베이스 비밀번호는 보안 프롬프트에 직접 입력
+npx supabase db push --linked --dry-run          # 적용될 파일 확인
+npx supabase db push --linked
 ```
 
-출력에는 아직 원격에 적용되지 않은 신규 마이그레이션만 보여야 합니다.
+1. Supabase **Authentication**에서 관리자 계정을 만듭니다.
+2. 관리자 계정을 `booth_admins`에 등록합니다(SQL Editor).
+   ```sql
+   insert into public.booth_admins (user_id)
+   select id from auth.users where email = '관리자 이메일';
+   ```
+3. Authentication → URL Configuration에 배포 주소의 `/admin/`을 Redirect URL로 추가합니다.
+4. `assets/supabase-config.js`에 프로젝트 URL과 **publishable key**를 넣습니다.
 
-이 프로젝트에는 스키마 마이그레이션 전부가 적용 완료 상태입니다. 아래 5개는 원래 행사의 실데이터/관리자 이메일에 묶여 있어 실제로는 실행하지 않고 `migration repair --status applied`로 완료 처리만 해두었습니다(파일은 히스토리 보존용으로 남아 있음):
+## 보안 원칙
 
-- `20260829111000_booth_admin.sql`
-- `20260829111500_booth_admin_switch.sql`
-- `20260829115000_booth_admin_reconcile.sql`
-- `20260917040650_fix_order_169_items.sql`
-- `20260917053059_add_manual_orders_203_204.sql`
+- 브라우저에는 publishable key만 넣고, Service Role 키는 넣지 않습니다.
+- 손님은 메뉴·부스 설정·공개 대기열(주문번호와 상태)만 읽을 수 있습니다.
+- 주문은 `booth_create_order` 함수로만 만들고, 가격·세트 할인·재고는 함수 안에서 다시 계산합니다.
+- 입금자명과 연락처는 관리자만 볼 수 있습니다.
+- 관리자 데이터 변경은 Auth 로그인과 `booth_admins` 등록을 모두 요구합니다.
 
-## 3. 마이그레이션 적용
+## 화면에서 쓰는 곳
 
-```bash
-supabase db push
-```
+| 화면 기능 | DB |
+| --- | --- |
+| 메뉴·부스 설정 | `booth_menu_items`, `booth_settings` |
+| 주문 생성 | `booth_create_order` |
+| 내 주문 복구 | `booth_get_order` |
+| 공개 대기열 | `booth_public_queue` + Realtime |
+| 주문 상태 변경 | `booth_orders` (관리자) |
+| 수동 주문 | `booth_admin_create_order` (관리자) |
+| 메뉴 가격·판매·품절·남은 수량, 세트 할인 | `booth_menu_items`, `booth_settings` (관리자) |
+| 메뉴 사진 | Storage `booth-menu-images` |
 
-## 4. 관리자 등록
+## 운영 작업
 
-먼저 Supabase Authentication에서 관리자 계정을 만든 뒤 SQL Editor에서 다음 SQL을 실행합니다.
-
-```sql
-insert into public.booth_admins (user_id)
-select id from auth.users where email = '관리자 이메일';
-```
-
-## 5. 프런트엔드 연결
-
-현재 고객·관리자 페이지는 `assets/supabase-store.js`를 사용합니다.
-
-- 메뉴: `booth_menu_items`
-- 주문 생성: `booth_create_order` RPC
-- 내 주문 복구: `booth_get_order` RPC
-- 공개 대기열: `booth_public_queue` + Realtime
-- 관리자 주문 변경: `booth_orders`
-- 메뉴 가격·판매·품절 변경: `booth_menu_items`
-- 메뉴 이미지: `booth-menu-images`
-
-관리자는 고정된 Gmail 계정으로 Auth 매직링크 로그인 후 `booth_is_admin()` 검사를 통과해야 데이터를 조회·변경할 수 있습니다. GitHub Pages 배포 후 `/admin/` 공개 주소를 Supabase Auth Redirect URL에 등록합니다.
-
-## 현재 관리자
-
-- 이메일: `ipad93920@gmail.com`
-- 등록 방법: 관리자 화면에서 매직링크로 최초 로그인해 Auth 사용자를 만든 뒤, SQL Editor에서 위 4번 SQL로 `booth_admins`에 등록합니다.
-
-## 현재 메뉴
-
-메뉴·가격·부스명은 아직 확정 전입니다. 관리자 화면에서 메뉴 이름·가격을 입력하고 판매 시작을 눌러야 고객 화면에 표시됩니다.
+- 주문 목록 초기화: `.claude/skills/reset-orders`
+- 일차별·메뉴별 판매 집계: `.claude/skills/sales-report`
+- DB와 화면을 함께 바꾸는 배포: `.claude/skills/release`
