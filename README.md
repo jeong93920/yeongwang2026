@@ -20,9 +20,15 @@
 학교 축제 **연광제 2026**(10/28~29)에서 운영한 7번 부스 **BASAK WITCH**(튀김산도·음료)의 주문 웹앱입니다.
 손님은 부스 앞 QR 코드를 찍어 폰으로 주문·송금하고, 부스 안에서는 태블릿의 주방 화면으로 주문을 처리합니다.
 
-| 데모 고객 메뉴 | 데모 고객 수령 알림 대기 | 데모 주방 화면 |
-| --- | --- | --- |
-| ![고객 메뉴](docs/screenshots/demo-customer-menu.jpg) | ![고객 대기 현황](docs/screenshots/demo-customer-ready.jpg) | ![주방 화면](docs/screenshots/demo-admin-kitchen.jpg) |
+| 고객 화면 · 메뉴 (폰) | 고객 화면 · 수령 알림 (폰) |
+| :---: | :---: |
+| <img src="docs/screenshots/demo-customer-menu.jpg" alt="고객 메뉴 화면" width="300"> | <img src="docs/screenshots/demo-customer-ready.jpg" alt="고객 수령 알림 화면" width="300"> |
+
+**주방 화면 · 주문 현황 (PC)**
+
+<img src="docs/screenshots/demo-admin-kitchen.jpg" alt="관리자 주방 주문 현황 화면" width="100%">
+
+<sub>모두 데모 모드에서 찍은 화면이며, 이름·연락처는 예시 값입니다.</sub>
 
 ### 고객 화면 (`index.html`)
 1. **메뉴** — 바삭 세트(튀김산도 + 음료, 500원 할인), 튀김산도 3종, 음료 2종(청귤에이드는 청귤차로 변경 가능). 품절·남은 수량 표시.
@@ -42,6 +48,33 @@
 - 가격·세트 할인·재고 차감은 브라우저가 아니라 DB 함수 `booth_create_order`에서 다시 계산합니다(손님이 금액을 조작할 수 없음).
 - 손님에게는 RLS(행 수준 보안)로 메뉴와 공개 대기열(번호·상태)만 보이고, 입금자명·연락처는 관리자만 봅니다.
 - 화면 코드는 `window.BoothStore` 인터페이스만 사용합니다. 실제 모드는 `assets/supabase-store.js`, 데모 모드는 `assets/demo-store.js`가 같은 함수를 구현하고, `assets/boot.js`가 주소의 `?demo` 여부로 둘 중 하나를 불러옵니다.
+
+### Supabase 연결과 DB 사용
+메뉴·주문·매출 데이터는 모두 **Supabase**(클라우드 PostgreSQL)에 저장하고, 고객 화면과 주방 화면이 같은 DB를 실시간으로 함께 씁니다.
+
+- **연결**: 브라우저에서 `@supabase/supabase-js@2.49.4`로 접속합니다. `assets/supabase-config.js`에는 프로젝트 URL과 공개용 publishable key만 있고, 모든 권한을 가진 Service Role 키는 코드에 넣지 않았습니다.
+- **DB 구조 관리**: 테이블·함수·보안 정책을 `supabase/migrations/`의 SQL 파일 37개로 관리하고, Supabase CLI(`npx supabase db push`)로 실제 DB에 적용했습니다. 메뉴 교체, 세트 할인, 수동 주문 같은 기능도 마이그레이션으로 DB를 먼저 바꾼 뒤 화면을 배포했습니다.
+
+| 테이블 | 저장하는 것 | 누가 읽나 |
+| --- | --- | --- |
+| `booth_settings` | 부스 이름, 입금 계좌, 영업 여부, 세트 할인 금액 | 누구나 |
+| `booth_menu_items` | 메뉴 이름·가격·분류(튀김산도/음료)·대체 메뉴·남은 수량·품절·소요시간 | 누구나(판매 중인 것만) |
+| `booth_orders` | 주문번호, 입금자명, 연락처, 상태, 금액 | 관리자만 |
+| `booth_order_items` | 주문별 메뉴 줄(이름·가격·수량 기록) | 관리자만 |
+| `booth_public_queue` | 대기열에 공개할 주문번호와 상태만 | 누구나 |
+| `booth_admins` | 관리자 계정 | 관리자 확인용 |
+
+| DB 함수(RPC) | 하는 일 |
+| --- | --- |
+| `booth_create_order` | 손님 주문 생성. 메뉴 가격·세트 할인을 DB에서 다시 계산하고, 남은 수량을 잠가 차감 |
+| `booth_get_order` | 기기에 저장된 비밀 토큰으로 내 주문만 다시 불러오기 |
+| `booth_admin_create_order` | 주방에서 넣는 수동 주문(관리자만, 바로 조리 중) |
+| `booth_is_admin` | 로그인한 계정이 관리자인지 확인 |
+| `booth_sync_public_queue` (트리거) | 주문이 생기거나 상태가 바뀌면 공개 대기열을 자동 갱신 |
+
+- **실시간(Realtime)**: `booth_public_queue`의 변경을 구독해서, 주방에서 `수령 가능`을 누르면 손님 폰 화면이 새로고침 없이 바뀌고 수령 알림이 뜹니다.
+- **로그인(Auth)**: 관리자는 Supabase Auth로 로그인하고, `booth_admins`에 등록된 계정만 주문·메뉴를 바꿀 수 있습니다.
+- **보안(RLS)**: 행 수준 보안 정책으로 손님은 메뉴와 공개 대기열만 읽을 수 있고, 주문 테이블을 직접 읽거나 쓸 수 없습니다. 주문은 위 DB 함수를 통해서만 만들어집니다.
 
 ### 축제 결과
 이틀 동안 실제로 이 앱으로 주문을 받았습니다. 입금 확인된 주문만 세면 **225건, 419개, 1,917,000원**입니다(10/29 21시 집계, 취소·입금 대기 주문 제외).
