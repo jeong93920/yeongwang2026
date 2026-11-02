@@ -44,9 +44,11 @@ grep -n '?v=' index.html admin/index.html
 ## 6. 배포와 확인
 ```bash
 git add <바꾼 파일> && git commit && git push origin main
-gh run watch $(gh run list -L 1 --json databaseId -q '.[0].databaseId') --exit-status
+# main 브랜치 배포 빌드가 끝날 때까지 확인(built가 나오면 완료, errored면 실패)
+until s=$(gh api repos/jeong93920/yeongwang2026/pages/builds/latest --jq '.status'); [ "$s" = built ] || [ "$s" = errored ]; do sleep 10; done; echo "$s"
 curl -s "https://jeong93920.github.io/yeongwang2026/?x=$RANDOM" | grep -c '<새 ?v 값>'
 ```
+- GitHub Pages는 main 브랜치를 그대로 배포한다(별도 배포 워크플로 없음). push 뒤 1분 안팎이면 빌드가 끝난다.
 - `0`이 나오면 Pages 반영이 늦은 것이니 잠시 뒤 다시 확인한다.
 - 마지막으로 폰으로 고객 화면을 열어 메뉴와 가격이 바뀌었는지 사용자에게 확인을 부탁한다.
 
