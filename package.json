@@ -1,0 +1,14 @@
+{
+  "name": "basak-witch-booth-order",
+  "private": true,
+  "description": "BASAK WITCH 부스 QR 주문 관리 시스템",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 4173 --bind 127.0.0.1",
+    "test": "node tests/e2e.test.mjs",
+    "screenshots": "node tests/e2e.test.mjs --shots"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
