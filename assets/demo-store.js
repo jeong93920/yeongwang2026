@@ -196,6 +196,11 @@
     notify();
   }
 
+  // 다른 탭(예: 관리자 데모)이 저장한 값이 바뀌면 이 탭도 다시 읽습니다. Supabase 실시간 구독을 대신합니다.
+  window.addEventListener('storage', event => {
+    if (event.key === null || event.key === STATE_KEY || event.key === CURRENT_ORDER_KEY) refresh();
+  });
+
   const readyPromise = Promise.resolve().then(() => {
     db = load();
     state = buildView();
