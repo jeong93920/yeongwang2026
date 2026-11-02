@@ -440,6 +440,17 @@
       tossPayLink.hidden = true;
     }
 
+    // 데모 모드에서는 송금 앱을 열지 않고 예시 계좌만 보여 줍니다.
+    if (store.isDemo) {
+      [kakaoPayLink, tossPayLink].forEach(link => {
+        link.removeAttribute('href');
+        link.onclick = null;
+        link.hidden = true;
+      });
+      $('#step-payment .section-description').textContent = '데모 모드라 실제로 송금하지 않아요. 예시 계좌를 확인하고 "송금했어요"를 눌러 주세요.';
+      $('#step-payment .payment-divider').hidden = true;
+    }
+
     $('#bank-name').textContent = [state.settings.bankName, state.settings.accountHolder].filter(Boolean).join(' · ') || '계좌 정보 준비 중';
     $('#account-number').textContent = state.settings.accountNumber || '등록 전';
     $('#copy-account').disabled = !state.settings.accountNumber;
